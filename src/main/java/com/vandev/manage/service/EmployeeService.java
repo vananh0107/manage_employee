@@ -1,6 +1,8 @@
 package com.vandev.manage.service;
 
 import com.vandev.manage.pojo.Employee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -10,5 +12,5 @@ public interface EmployeeService {
     void deleteEmployee(Integer employeeId);
     Employee getEmployeeById(Integer employeeId);
     List<Employee> getAllEmployees();
-    List<Employee> searchEmployees(String query);
+    Page<Employee> getPagedEmployees(String name, Pageable pageable);
 }

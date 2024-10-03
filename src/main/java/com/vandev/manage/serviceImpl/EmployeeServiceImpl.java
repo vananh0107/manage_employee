@@ -7,6 +7,8 @@ import com.vandev.manage.service.EmployeeService;
 import com.vandev.manage.service.UserService;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -80,8 +82,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> searchEmployees(String query) {
-        // Tìm kiếm nhân viên theo tên hoặc email
-        return employeeRepository.findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
+    public Page<Employee> getPagedEmployees(String name, Pageable pageable) {
+        if (name == null || name.isEmpty()) {
+            return employeeRepository.findAll(pageable); // Return all employees if no search query is provided
+        } else {
+            return employeeRepository.findByFullNameContainingIgnoreCase(name, pageable); // Search employees by name or email
+        }
     }
 }

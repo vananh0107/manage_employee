@@ -5,12 +5,15 @@ import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.repository.UserRepository;
 import com.vandev.manage.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,21 +44,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserSystem createUser(UserSystem user, Integer employeeId) {
-        UserSystem currentUser = getCurrentUser(); // Lấy người dùng hiện tại đang đăng nhập
-
-        // Kiểm tra nếu người dùng hiện tại là admin
+        UserSystem currentUser = getCurrentUser();
         if (!currentUser.getRole().equals("admin")) {
             throw new SecurityException("Chỉ admin mới có quyền tạo người dùng.");
         }
-
-        // Nếu có employeeId được cung cấp, gán nhân viên cho người dùng
-        if (employeeId != null) {
-            Employee employee = employeeRepository.findById(employeeId)
-                    .orElseThrow(() -> new IllegalArgumentException("ID nhân viên không hợp lệ: " + employeeId));
-            user.setEmployee(employee);
-        }
-
-        // Lưu người dùng mới
         return userRepository.save(user);
     }
     @Override
@@ -86,5 +78,24 @@ public class UserServiceImpl implements UserService {
             user.setActive(active); // Cập nhật trạng thái active cho người dùng
             userRepository.save(user); // Lưu thay đổi
         });
+    }
+    @Override
+    public UserSystem getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    }
+    @Override
+    public void updateUser(UserSystem user, Boolean active, Integer employeeId) {
+        // Update active status
+        user.setActive(active);
+
+        // If an employee ID is provided, assign the employee to the user
+        if (employeeId != null) {
+            Employee employee = employeeRepository.findById(employeeId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid Employee ID: " + employeeId));
+            user.setEmployee(employee);
+        }
+
+        userRepository.save(user); // Save updated user data
     }
 }
