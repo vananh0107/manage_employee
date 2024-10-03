@@ -1,7 +1,9 @@
 package com.vandev.manage.serviceImpl;
 
 import com.vandev.manage.pojo.Department;
+import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.repository.DepartmentRepository;
+import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,12 @@ import java.util.Optional;
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentRepository departmentRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository) {
         this.departmentRepository = departmentRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -59,5 +63,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
+    }
+    @Override
+    public List<Employee> getEmployeesByDepartment(Department department) {
+        return employeeRepository.findByDepartment(department);
     }
 }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div th:replace="layout :: content">
+    <h1>Quản Lý Nhân Viên</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Mã Nhân Viên</th>
+            <th>Họ và Tên</th>
+            <th>Giới Tính</th>
+            <th>Email</th>
+            <th>Điện Thoại</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}">
+            <td th:text="${employee.id}"></td>
+            <td th:text="${employee.fullName}"></td>
+            <td th:text="${employee.gender}"></td>
+            <td th:text="${employee.email}"></td>
+            <td th:text="${employee.phone}"></td>
+            <td>
+                <a href="#" class="btn btn-warning">Edit</a>
+                <a href="#" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a href="#" class="btn btn-primary">Thêm Nhân Viên</a>
+</div>
+</body>
+</html>

@@ -1,8 +1,10 @@
 package com.vandev.manage.serviceImpl;
 
 import com.vandev.manage.pojo.Employee;
+import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.service.EmployeeService;
+import com.vandev.manage.service.UserService;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,18 +16,24 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final UserService userService;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, UserService userService) {
         this.employeeRepository = employeeRepository;
+        this.userService = userService;
     }
 
     @Override
     public Employee createEmployee(Employee employee) {
-        // Kiểm tra vai trò
-        if (!employee.getRole().equals("user") && !employee.getRole().equals("admin")) {
-            throw new ValidationException("Role must be 'user' or 'admin'.");
+        // Lấy thông tin người dùng hiện tại từ UserDetailsService
+        UserSystem currentUser = userService.getCurrentUser(); // Giả sử bạn đã có phương thức để lấy UserSystem hiện tại
+
+        // Kiểm tra vai trò của người dùng
+        if (!currentUser.getRole().equals("admin")) {
+            throw new ValidationException("Only admins can create employees.");
         }
+
         return employeeRepository.save(employee);
     }
 
@@ -44,7 +52,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             updatedEmployee.setEmail(employee.getEmail());
             updatedEmployee.setPhone(employee.getPhone());
             updatedEmployee.setNotes(employee.getNotes());
-            updatedEmployee.setRole(employee.getRole());
             updatedEmployee.setDepartment(employee.getDepartment());
             return employeeRepository.save(updatedEmployee);
         } else {

@@ -8,18 +8,16 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "employee")
+@Table(name = "employees")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer employee_id; // Mã nhân viên
+    private Integer id; // Mã nhân viên
 
     @NotNull(message = "Full name is required")
     private String fullName; // Họ và tên
@@ -51,11 +49,7 @@ public class Employee {
 
     private String notes; // Ghi chú
 
-    @NotNull(message = "Role is required")
-    @Pattern(regexp = "user|admin", message = "Role must be 'user' or 'admin'")
-    private String role; // Vai trò: user hoặc admin
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "department_id",nullable = false)
+    @JoinColumn(name = "department_id",nullable = true)
     private Department department;
 }

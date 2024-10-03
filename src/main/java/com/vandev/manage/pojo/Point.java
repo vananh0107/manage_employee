@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Data
 @Entity
-@Table(name = "point")
+@Table(name = "points")
 public class Point {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +20,6 @@ public class Point {
     private Date recordedDate; // Ngày ghi nhận
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "employee_id",nullable = false)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 }

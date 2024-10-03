@@ -1,5 +1,6 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.pojo.Point;
 import com.vandev.manage.repository.PointRepository;
 import com.vandev.manage.service.PointService;
@@ -68,6 +69,6 @@ public class PointServiceImpl implements PointService {
 
     @Override
     public List<Point> getPointsByEmployeeId(Integer employeeId) {
-        return pointRepository.findByEmployeeId(employeeId); // Gọi phương thức mới trong repository
+        return pointRepository.findByEmployee_Id(employeeId); // Gọi phương thức mới trong repository
     }
 }
