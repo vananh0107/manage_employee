@@ -13,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Configuration
 @EnableWebSecurity
@@ -49,14 +48,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/register","/non-active", "/resources/**", "/static/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Chỉ cho phép admin truy cập
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // Cho phép user và admin truy cập
-                        .anyRequest().authenticated() // Các trang khác yêu cầu đăng nhập
+                        .requestMatchers("/login", "/register","/non-active","/css/**", "/resources/**", "/static/**","/departments/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true) // Redirect to home after login
+                        .defaultSuccessUrl("/home", true)
                         .failureHandler(authenticationFailure)
                         .permitAll()
                 )

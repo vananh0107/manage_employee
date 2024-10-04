@@ -3,7 +3,6 @@ package com.vandev.manage.serviceImpl;
 import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;

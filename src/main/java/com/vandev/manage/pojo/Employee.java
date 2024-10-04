@@ -2,10 +2,7 @@ package com.vandev.manage.pojo;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import jakarta.persistence.*;
 
@@ -17,37 +14,37 @@ import java.util.Date;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // Mã nhân viên
+    private Integer id;
 
     @NotNull(message = "Full name is required")
-    private String fullName; // Họ và tên
+    private String fullName;
 
     @NotNull(message = "Gender is required")
     @Pattern(regexp = "Male|Female", message = "Gender must be Male, Female")
     private String gender;
 
     @NotNull(message = "Image URL is required")
-    private String image; // Hình ảnh
+    private String image;
 
     @NotNull(message = "Birthdate is required")
-    private Date birthDate; // Ngày sinh
+    private Date birthDate;
 
     @NotNull(message = "Salary is required")
-    private double salary; // Lương
+    private double salary;
 
     @NotNull(message = "Level is required")
-    @Size(min = 1, max = 10, message = "Level must be between 1 and 10")
-    private int level; // Cấp độ
+    @Min(1)
+    @Max(10)
+    private int level;
 
     @NotNull(message = "Email is required")
     @Email(message = "Email should be valid")
-    private String email; // Email
-
+    private String email;
     @NotNull(message = "Phone number is required")
     @Pattern(regexp = "^09[0-9]{8}$", message = "Phone number is invalid")
-    private String phone; // Điện thoại
+    private String phone;
 
-    private String notes; // Ghi chú
+    private String notes;
 
     @ManyToOne
     @JoinColumn(name = "department_id",nullable = true)

@@ -11,10 +11,10 @@ import java.util.List;
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // Mã phòng ban
+    private Integer id;
 
     @Column(unique = true, nullable = false)
-    private String name; // Tên phòng ban
+    private String name;
     @OneToMany(mappedBy = "department")
     private List<Employee> employees;
 }

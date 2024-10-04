@@ -1,5 +1,6 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.pojo.Department;
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.repository.EmployeeRepository;
@@ -28,10 +29,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee createEmployee(Employee employee) {
-        // Lấy thông tin người dùng hiện tại từ UserDetailsService
-        UserSystem currentUser = userService.getCurrentUser(); // Giả sử bạn đã có phương thức để lấy UserSystem hiện tại
+        UserSystem currentUser = userService.getCurrentUser();
 
-        // Kiểm tra vai trò của người dùng
         if (!currentUser.getRole().equals("admin")) {
             throw new ValidationException("Only admins can create employees.");
         }
@@ -41,7 +40,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee updateEmployee(Integer employeeId, Employee employee) {
-        // Kiểm tra xem nhân viên có tồn tại hay không
         Optional<Employee> existingEmployee = employeeRepository.findById(employeeId);
         if (existingEmployee.isPresent()) {
             Employee updatedEmployee = existingEmployee.get();
@@ -63,7 +61,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void deleteEmployee(Integer employeeId) {
-        // Kiểm tra xem nhân viên có tồn tại hay không
         if (!employeeRepository.existsById(employeeId)) {
             throw new IllegalArgumentException("Employee not found.");
         }
@@ -84,9 +81,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Page<Employee> getPagedEmployees(String name, Pageable pageable) {
         if (name == null || name.isEmpty()) {
-            return employeeRepository.findAll(pageable); // Return all employees if no search query is provided
+            return employeeRepository.findAll(pageable);
         } else {
-            return employeeRepository.findByFullNameContainingIgnoreCase(name, pageable); // Search employees by name or email
+            return employeeRepository.findByFullNameContainingIgnoreCase(name, pageable);
         }
+    }
+    @Override
+    public List<Employee> getEmployeesWithoutDepartment() {
+        return employeeRepository.findByDepartmentIsNull();
+    }
+    public List<Employee> findAllById(List<Integer> ids) {
+        return employeeRepository.findAllById(ids);
+    }
+
+    // Thêm phương thức saveAll nếu chưa có
+    public void saveAll(List<Employee> employees) {
+        employeeRepository.saveAll(employees);
+    }
+    @Override
+    public List<Employee> getEmployeesByDepartment(Department department) {
+        return employeeRepository.findByDepartment(department);
     }
 }

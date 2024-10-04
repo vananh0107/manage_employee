@@ -27,37 +27,33 @@ public class AccountManagementController {
         this.userServiceImpl = userServiceImpl;
     }
 
-    // Chỉ admin mới được phép truy cập
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/account-management")
     public String showAccountManagement(Model model) {
-        List<UserSystem> users = userServiceImpl.findAllUsers(); // Phương thức lấy danh sách tất cả người dùng
+        List<UserSystem> users = userServiceImpl.findAllUsers();
         model.addAttribute("users", users);
-        return "account-management"; // Trả về trang account-management.html
+        return "account-management";
     }
 
     @PostMapping("/account-management/delete/{id}")
     public String deleteUser(@PathVariable("id") Integer id) {
-        userServiceImpl.deleteUserById(id); // Phương thức xóa người dùng theo ID
-        return "redirect:/admin/account-management"; // Quay lại trang quản lý tài khoản
+        userServiceImpl.deleteUserById(id);
+        return "redirect:/admin/account-management";
     }
 
     @PostMapping("/users/{id}/activate")
     public String activateUser(@PathVariable Integer id) {
-        userServiceImpl.setActive(id, true); // Kích hoạt người dùng
-        return "redirect:/admin/users"; // Chuyển hướng về danh sách người dùng
+        userServiceImpl.setActive(id, true);
+        return "redirect:/admin/users";
     }
-    // Show the edit user form
     @GetMapping("/users/edit/{id}")
     public String showEditUserForm(@PathVariable Integer id, Model model,
                                    @RequestParam(defaultValue = "") String searchQuery,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "5") int size) {
-        // Get user by ID
         UserSystem user = userServiceImpl.getUserById(id);
         model.addAttribute("user", user);
 
-        // Paginate and search employees
         Pageable pageable = PageRequest.of(page, size);
         Page<Employee> employeePage = employeeServiceImpl.getPagedEmployees(searchQuery, pageable);
 
@@ -67,14 +63,12 @@ public class AccountManagementController {
         return "user-edit";
     }
 
-    // Handle form submission for editing user
     @PostMapping("/users/edit/{id}")
     public String updateUser(@PathVariable Integer id,
                              @RequestParam("active") Boolean active,
                              @RequestParam("employeeId") Integer employeeId) {
         UserSystem user = userServiceImpl.getUserById(id);
 
-        // Update the user with active status and assigned employee
         userServiceImpl.updateUser(user, active, employeeId);
 
         return "redirect:/admin/account-management";

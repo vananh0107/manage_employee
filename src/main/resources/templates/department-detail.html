@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Department Details</title>
+    <head th:insert="~{fragments/fragment::html_head}"></head>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container my-4">
+    <br>
+    <h2>Department name:  <span th:text="${department.name}"></span></h2>
+    <br>
+    <br>
+    <h4>Employee list:</h4>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Birthday</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}">
+            <td th:text="${employee.id}"></td>
+            <td th:text="${employee.fullName}"></td>
+            <td th:text="${#dates.format(employee.birthDate, 'dd/MM/yyyy')}"></td>
+            <td th:text="${employee.email}"></td>
+            <td th:text="${employee.phone}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="#" class="btn btn-primary" th:href="@{/departments}">Back to Departments</a>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

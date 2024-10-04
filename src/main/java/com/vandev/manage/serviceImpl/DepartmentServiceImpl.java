@@ -1,11 +1,12 @@
 package com.vandev.manage.serviceImpl;
 
 import com.vandev.manage.pojo.Department;
-import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.repository.DepartmentRepository;
 import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department createDepartment(Department department) {
-        // Kiểm tra nếu tên phòng ban đã tồn tại hay chưa
         if (departmentRepository.findByName(department.getName()).isPresent()) {
             throw new IllegalArgumentException("Department name already exists.");
         }
@@ -34,11 +34,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department updateDepartment(Integer departmentId, Department department) {
-        // Kiểm tra xem phòng ban có tồn tại hay không
         Optional<Department> existingDepartment = departmentRepository.findById(departmentId);
         if (existingDepartment.isPresent()) {
             Department updatedDepartment = existingDepartment.get();
-            updatedDepartment.setName(department.getName()); // Cập nhật tên phòng ban
+            updatedDepartment.setName(department.getName());
             return departmentRepository.save(updatedDepartment);
         } else {
             throw new IllegalArgumentException("Department not found.");
@@ -47,7 +46,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void deleteDepartment(Integer departmentId) {
-        // Kiểm tra xem phòng ban có tồn tại hay không
         if (!departmentRepository.existsById(departmentId)) {
             throw new IllegalArgumentException("Department not found.");
         }
@@ -64,8 +62,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
     }
+
     @Override
-    public List<Employee> getEmployeesByDepartment(Department department) {
-        return employeeRepository.findByDepartment(department);
+    public Page<Department> findPaginated(int page, int size) {
+        return departmentRepository.findAll(PageRequest.of(page, size));
     }
 }

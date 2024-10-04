@@ -69,6 +69,6 @@ public class PointServiceImpl implements PointService {
 
     @Override
     public List<Point> getPointsByEmployeeId(Integer employeeId) {
-        return pointRepository.findByEmployee_Id(employeeId); // Gọi phương thức mới trong repository
+        return pointRepository.findByEmployee_Id(employeeId);
     }
 }

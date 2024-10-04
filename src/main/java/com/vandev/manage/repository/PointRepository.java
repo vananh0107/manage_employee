@@ -1,6 +1,5 @@
 package com.vandev.manage.repository;
 
-import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.pojo.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
 

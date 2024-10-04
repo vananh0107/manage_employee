@@ -14,10 +14,10 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Point {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // ID ghi nhận
-    private boolean type; // Loại: 1 là thành tích, 0 là kỷ luật
-    private String reason; // Lý do
-    private Date recordedDate; // Ngày ghi nhận
+    private Integer id;
+    private boolean type;
+    private String reason;
+    private Date recordedDate;
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)

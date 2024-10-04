@@ -12,8 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +37,7 @@ public class UserServiceImpl implements UserService {
             String username = authentication.getName();
             return userRepository.findByUsername(username).orElse(null);
         }
-        return null; // hoặc có thể ném ra ngoại lệ nếu không tìm thấy người dùng
+        return null;
     }
     @Override
     @Transactional
@@ -57,26 +55,24 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public boolean usernameExists(String username) {
-        return userRepository.findByUsername(username).isPresent(); // Kiểm tra xem người dùng đã tồn tại hay chưa
+        return userRepository.findByUsername(username).isPresent();
     }
-    // Phương thức lấy tất cả người dùng
     @Override
     public List<UserSystem> findAllUsers() {
-        return userRepository.findAll(); // Trả về danh sách tất cả người dùng
+        return userRepository.findAll();
     }
 
-    // Phương thức xóa người dùng theo ID
     @Override
     public void deleteUserById(Integer id) {
-        userRepository.deleteById(id); // Xóa người dùng theo ID
+        userRepository.deleteById(id);
     }
 
     @Override
     public void setActive(Integer id, boolean active) {
         Optional<UserSystem> userOptional = userRepository.findById(id);
         userOptional.ifPresent(user -> {
-            user.setActive(active); // Cập nhật trạng thái active cho người dùng
-            userRepository.save(user); // Lưu thay đổi
+            user.setActive(active);
+            userRepository.save(user);
         });
     }
     @Override
@@ -86,16 +82,14 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public void updateUser(UserSystem user, Boolean active, Integer employeeId) {
-        // Update active status
         user.setActive(active);
 
-        // If an employee ID is provided, assign the employee to the user
         if (employeeId != null) {
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid Employee ID: " + employeeId));
             user.setEmployee(employee);
         }
 
-        userRepository.save(user); // Save updated user data
+        userRepository.save(user);
     }
 }

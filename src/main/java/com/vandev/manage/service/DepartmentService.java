@@ -1,7 +1,7 @@
 package com.vandev.manage.service;
 
 import com.vandev.manage.pojo.Department;
-import com.vandev.manage.pojo.Employee;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ public interface DepartmentService {
     void deleteDepartment(Integer departmentId);
     Department getDepartmentById(Integer departmentId);
     List<Department> getAllDepartments();
-    List<Employee> getEmployeesByDepartment(Department department);
+    Page<Department> findPaginated(int page, int size);
 }

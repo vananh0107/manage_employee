@@ -9,7 +9,6 @@ public class NonActiveController {
 
     @GetMapping("/non-active")
     public String showNonActivePage(Model model) {
-        // Bạn có thể thêm bất kỳ thông tin nào cần thiết vào model
-        return "non-active"; // Trả về trang non-active.html
+        return "non-active";
     }
 }

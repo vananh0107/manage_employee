@@ -12,7 +12,6 @@
         <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Email</th>
             <th>Role</th>
             <th>Active</th>
             <th>Actions</th>
@@ -21,25 +20,23 @@
         <tbody>
         <tr th:each="user, iterStat : ${users}">
             <td th:text="${iterStat.index + 1}"></td>
-            <td th:text="${user.fullName}"></td>
-            <td th:text="${user.email}"></td>
+            <td th:text="${user.username}"></td>
             <td th:text="${user.role}"></td>
             <td>
                 <span th:if="${user.active}" class="badge bg-success">Active</span>
                 <span th:if="${!user.active}" class="badge bg-danger">Inactive</span>
             </td>
             <td>
-                <!-- View button -->
                 <a th:href="@{'/admin/users/' + ${user.id}}" class="btn btn-primary btn-sm">
                     <i class="bi bi-eye"></i>
                 </a>
-                <!-- Edit button (opens modal) -->
                 <button type="button" class="btn btn-warning btn-sm"
-                        th:attr="data-bs-toggle='modal', data-bs-target='#editUserModal', data-user-id=${user.id},
-                                 data-user-active=${user.active}, data-user-employee=${user.employee?.id}">
+                        th:attr="data-bs-toggle='modal', data-bs-target='#editUserModal',
+                                 data-user-id=${user.id}, data-user-active=${user.active},
+                                 data-user-employee=${user.employee?.id}">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <!-- Delete button -->
+
                 <form th:action="@{'/admin/account-management/delete/' + ${user.id}}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="bi bi-trash"></i>
@@ -50,7 +47,6 @@
         </tbody>
     </table>
     <nav>
-        <!-- Pagination (Example for 5 pages) -->
         <ul class="pagination">
             <li class="page-item"><a class="page-link" href="#">1</a></li>
             <li class="page-item"><a class="page-link" href="#">2</a></li>
@@ -61,7 +57,6 @@
     </nav>
 </div>
 
-<!-- Modal for editing user -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -70,9 +65,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Form to update user -->
-                <form th:action="@{'/admin/users/edit/' + ${user.id}}" method="post" id="editUserForm">
-                    <!-- Active status field -->
+                <form method="post" id="editUserForm">
                     <div class="mb-3">
                         <label for="active" class="form-label">Active</label>
                         <select class="form-control" id="active" name="active">
@@ -81,14 +74,11 @@
                         </select>
                     </div>
 
-                    <!-- Assign employee field with search and pagination -->
                     <div class="mb-3">
                         <label for="employee" class="form-label">Assign Employee</label>
 
-                        <!-- Search box -->
                         <input type="text" id="searchEmployee" class="form-control mb-2" placeholder="Search employee by name">
 
-                        <!-- Employee list with pagination -->
                         <select class="form-select" id="employee" name="employeeId">
                             <option value="">None</option>
                             <option th:each="employee : ${employeePage.content}"
@@ -97,7 +87,6 @@
                             </option>
                         </select>
 
-                        <!-- Pagination -->
                         <nav th:if="${employeePage.totalPages > 1}">
                             <ul class="pagination">
                                 <li th:classappend="${employeePage.hasPrevious() ? '' : 'disabled'}">
@@ -123,19 +112,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Handle the Edit button click to load data into the modal
     var editUserModal = document.getElementById('editUserModal');
     editUserModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
+
         var userId = button.getAttribute('data-user-id');
         var userActive = button.getAttribute('data-user-active') === 'true';
         var userEmployeeId = button.getAttribute('data-user-employee');
 
-        // Update the modal's form fields with the user's data
         document.getElementById('editUserForm').action = '/admin/users/edit/' + userId;
         document.getElementById('active').value = userActive ? 'true' : 'false';
         document.getElementById('employee').value = userEmployeeId;
     });
+
 </script>
 </body>
 </html>
