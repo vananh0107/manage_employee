@@ -30,8 +30,6 @@ public class RegisterController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") UserSystem user, BindingResult result, Model model) {
-        log.info("Đăng ký người dùng");
-
         if (userServiceImpl.usernameExists(user.getUsername())) {
             result.rejectValue("username", "error.user", "Tên đăng nhập đã tồn tại");
         }

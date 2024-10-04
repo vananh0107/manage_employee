@@ -32,7 +32,7 @@ public class DepartmentController {
         List<Employee> employeesWithoutDepartment = employeeServiceImpl.getEmployeesWithoutDepartment();
         model.addAttribute("employeesWithoutDepartment", employeesWithoutDepartment);
         model.addAttribute("employeeServiceImpl", employeeServiceImpl);
-        return "department";
+        return "department/index";
     }
     @PostMapping("/create")
     public String createDepartment(@ModelAttribute Department department,
@@ -58,7 +58,7 @@ public class DepartmentController {
         model.addAttribute("department", department);
         model.addAttribute("employees", employees);
 
-        return "department-detail";
+        return "department/detail";
     }
 
     @GetMapping("/edit/{id}")
@@ -71,7 +71,7 @@ public class DepartmentController {
         model.addAttribute("employeesInDepartment", employeesInDepartment);
         model.addAttribute("employeesWithoutDepartment", employeesWithoutDepartment);
 
-        return "department-edit";
+        return "department/edit";
     }
 
     @PostMapping("/edit/{id}")
@@ -98,25 +98,17 @@ public class DepartmentController {
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "Department updated successfully!");
-        return "redirect:/departments";
+        return "department/index";
     }
     @PostMapping("/delete/{id}")
     public String deleteDepartment(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            Department department = departmentServiceImpl.getDepartmentById(id);
-            if (department != null) {
-                List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
-                employees.forEach(employee -> employee.setDepartment(null));
-                employeeServiceImpl.saveAll(employees);
-                departmentServiceImpl.deleteDepartment(id);
-                redirectAttributes.addFlashAttribute("successMessage", "Department deleted successfully!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Department not found!");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting department: " + e.getMessage());
+        Department department = departmentServiceImpl.getDepartmentById(id);
+        if (department != null) {
+            List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
+            employees.forEach(employee -> employee.setDepartment(null));
+            employeeServiceImpl.saveAll(employees);
+            departmentServiceImpl.deleteDepartment(id);
         }
-
         return "redirect:/departments";
     }
 }

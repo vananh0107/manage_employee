@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class CreateEmployeeController {
+public class EmployeeController {
     private final DepartmentServiceImpl departmentServiceImpl;
     private final EmployeeServiceImpl employeeServiceImpl;
 
     @Autowired
-    public CreateEmployeeController(DepartmentServiceImpl departmentServiceImpl, EmployeeServiceImpl employeeServiceImpl) {
+    public EmployeeController(DepartmentServiceImpl departmentServiceImpl, EmployeeServiceImpl employeeServiceImpl) {
         this.departmentServiceImpl = departmentServiceImpl;
         this.employeeServiceImpl = employeeServiceImpl;
     }
