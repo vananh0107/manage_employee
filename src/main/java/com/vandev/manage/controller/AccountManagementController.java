@@ -48,18 +48,15 @@ public class AccountManagementController {
     }
     @GetMapping("/users/edit/{id}")
     public String showEditUserForm(@PathVariable Integer id, Model model,
-                                   @RequestParam(defaultValue = "") String searchQuery,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "5") int size) {
         UserSystem user = userServiceImpl.getUserById(id);
         model.addAttribute("user", user);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Employee> employeePage = employeeServiceImpl.getPagedEmployees(searchQuery, pageable);
+        Page<Employee> employeePage = employeeServiceImpl.getPagedEmployees(pageable);
 
         model.addAttribute("employeePage", employeePage);
-        model.addAttribute("searchQuery", searchQuery);
-
         return "user-edit";
     }
 

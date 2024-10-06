@@ -9,6 +9,7 @@ import com.vandev.manage.service.UserService;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +30,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee createEmployee(Employee employee) {
-        UserSystem currentUser = userService.getCurrentUser();
+//        UserSystem currentUser = userService.getCurrentUser();
 
-        if (!currentUser.getRole().equals("admin")) {
-            throw new ValidationException("Only admins can create employees.");
-        }
+//        if (!currentUser.getRole().equals("admin")) {
+//            throw new ValidationException("Only admins can create employees.");
+//        }
 
         return employeeRepository.save(employee);
     }
@@ -79,12 +80,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Page<Employee> getPagedEmployees(String name, Pageable pageable) {
-        if (name == null || name.isEmpty()) {
-            return employeeRepository.findAll(pageable);
-        } else {
-            return employeeRepository.findByFullNameContainingIgnoreCase(name, pageable);
-        }
+    public Page<Employee> getPagedEmployees(Pageable pageable) {
+        Pageable fixedPageable = PageRequest.of(pageable.getPageNumber(), 8);
+        return employeeRepository.findAll(fixedPageable);
     }
     @Override
     public List<Employee> getEmployeesWithoutDepartment() {

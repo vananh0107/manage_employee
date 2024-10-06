@@ -13,7 +13,7 @@ public interface EmployeeService {
     void deleteEmployee(Integer employeeId);
     Employee getEmployeeById(Integer employeeId);
     List<Employee> getAllEmployees();
-    Page<Employee> getPagedEmployees(String name, Pageable pageable);
+    Page<Employee> getPagedEmployees( Pageable pageable);
     List<Employee> getEmployeesWithoutDepartment();
     List<Employee> findAllById(List<Integer> ids);
     void saveAll(List<Employee> employees);

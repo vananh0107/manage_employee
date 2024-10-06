@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -23,10 +24,9 @@ public class Employee {
     @Pattern(regexp = "Male|Female", message = "Gender must be Male, Female")
     private String gender;
 
-    @NotNull(message = "Image URL is required")
     private String image;
-
     @NotNull(message = "Birthdate is required")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
 
     @NotNull(message = "Salary is required")

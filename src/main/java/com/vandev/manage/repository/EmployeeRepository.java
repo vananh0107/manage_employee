@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface EmployeeRepository  extends JpaRepository<Employee,Integer> {
-    Page<Employee> findByFullNameContainingIgnoreCase(String fullName, Pageable pageable);
     List<Employee> findByDepartment(Department department);
     List<Employee> findByDepartmentIsNull();
 }
