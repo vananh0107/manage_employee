@@ -46,12 +46,12 @@ public class EmployeeController {
         for (Employee employee : employeePage.getContent()) {
             String imagePath = employee.getImage();
             if (imagePath != null && !imagePath.isEmpty()) {
-                int startIndex = imagePath.indexOf("images");
-                String relativePath = imagePath.substring(startIndex).replace("\\", "/");
-                employee.setImage("/"+relativePath);
+                String fileName = "/"+imagePath.substring(imagePath.lastIndexOf("\\") + 1);
+                employee.setImage(fileName);
             }
         }
-
+        List<Department> departments = departmentServiceImpl.getAllDepartments();
+        model.addAttribute("departments", departments);
         model.addAttribute("employeePage", employeePage);
         return "employee/index";
     }
@@ -59,10 +59,17 @@ public class EmployeeController {
     @PostMapping("/create")
     public String createEmployee(@ModelAttribute Employee employee,
                                  @RequestParam("image") MultipartFile imageFile,
+                                 @RequestParam("departmentId") String departmentId,
                                  RedirectAttributes redirectAttributes) {
         try {
             String imagePath = saveImageWithTimestamp(imageFile);
             employee.setImage(imagePath);
+            if (departmentId == null || departmentId.isEmpty()) {
+                employee.setDepartment(null);
+            } else {
+                Department department = departmentServiceImpl.getDepartmentById(Integer.parseInt(departmentId));
+                employee.setDepartment(department);
+            }
             employeeServiceImpl.createEmployee(employee);
             return "redirect:/employees";
         } catch (IOException e) {
@@ -74,22 +81,16 @@ public class EmployeeController {
     private String saveImageWithTimestamp(MultipartFile imageFile) throws IOException {
         String extension = imageFile.getOriginalFilename().substring(imageFile.getOriginalFilename().lastIndexOf("."));
         String customFileName = System.currentTimeMillis() + extension;
-        String uploadDir = "F:/VietIds/manage_employee/src/main/resources/static/images/";
+        String uploadDir = "C:/Users/anhbv/code/manage_employee/src/main/resources/upload_images/images/";
         Path filePath = Paths.get(uploadDir + customFileName);
         Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        return "/images/" + customFileName;
+        return "images/"+customFileName;
     }
 
     @GetMapping("/view/{id}")
     public String viewEmployee(@PathVariable("id") Integer id, Model model) {
         Employee employee = employeeServiceImpl.getEmployeeById(id);
-//        String imagePath = employee.getImage();
-//        if (imagePath != null && !imagePath.isEmpty()) {
-//            int startIndex = imagePath.indexOf("images");
-//            String relativePath = imagePath.substring(startIndex).replace("\\", "/");
-//            employee.setImage("/"+relativePath);
-//        }
+        employee.setImage("/"+employee.getImage());
         model.addAttribute("employee", employee);
         return "employee/detail";
     }
@@ -103,43 +104,53 @@ public class EmployeeController {
         return "employee/edit";
     }
 
-//    @PostMapping("/edit/{id}")
-//    public String updateEmployee(@PathVariable("id") Integer id,
-//                                 @ModelAttribute @Valid Employee employee,
-//                                 BindingResult result,
-//                                 @RequestParam("image") MultipartFile imageFile, // Xử lý cập nhật ảnh
-//                                 Model model,
-//                                 RedirectAttributes redirectAttributes) throws IOException {
-//        if (result.hasErrors()) {
-//            List<Department> departments = departmentServiceImpl.getAllDepartments();
-//            model.addAttribute("departments", departments);
-//            return "employee/edit";
-//        }
-//
-//        if (!imageFile.isEmpty()) {
-//            // Chuyển ảnh thành chuỗi base64 và lưu trữ
-//            employee.setImage(imageFile.getBytes());
-//        }
-//
-//        employeeServiceImpl.updateEmployee(id, employee);
-//        redirectAttributes.addFlashAttribute("successMessage", "Employee updated successfully!");
-//        return "redirect:/employees";
-//    }
-
-        @PostMapping("/delete/{id}")
-        public String deleteEmployee(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-            try {
-                Employee employee = employeeServiceImpl.getEmployeeById(id);
-                String imagePath = employee.getImage();
-                if (imagePath != null && !imagePath.isEmpty()) {
-                    Path filePath = Paths.get(imagePath);
-                    Files.deleteIfExists(filePath);
+    @PostMapping("/edit/{id}")
+    public String updateEmployee(@PathVariable("id") Integer id,
+                                 @ModelAttribute Employee employee,
+                                 @RequestParam("image") MultipartFile imageFile,
+                                 @RequestParam("departmentId") String departmentId,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            Employee existingEmployee = employeeServiceImpl.getEmployeeById(id);
+            if (!imageFile.isEmpty()) {
+                if (existingEmployee.getImage() != null && !existingEmployee.getImage().isEmpty()) {
+                    Path oldImagePath = Paths.get(existingEmployee.getImage());
+                    Files.deleteIfExists(oldImagePath);
                 }
-
-                employeeServiceImpl.deleteEmployee(id);
-            } catch (IOException e) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete image file.");
+                String newImagePath = saveImageWithTimestamp(imageFile);
+                employee.setImage(newImagePath);
+            } else {
+                employee.setImage(existingEmployee.getImage());
             }
+            if (departmentId == null || departmentId.isEmpty()) {
+                employee.setDepartment(null);
+            } else {
+                Department department = departmentServiceImpl.getDepartmentById(Integer.parseInt(departmentId));
+                employee.setDepartment(department);
+            }
+            employeeServiceImpl.updateEmployee(id, employee);
+            return "redirect:/employees";
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update employee or handle image file.");
             return "redirect:/employees";
         }
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteEmployee(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            Employee employee = employeeServiceImpl.getEmployeeById(id);
+            String imagePath = employee.getImage();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                Path filePath = Paths.get(imagePath);
+                Files.deleteIfExists(filePath);
+            }
+
+            employeeServiceImpl.deleteEmployee(id);
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete image file.");
+        }
+        return "redirect:/employees";
+    }
 }

@@ -7,16 +7,18 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @Entity
-@Table(name = "points")
-public class Point {
+@Table(name = "scores")
+public class Score {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private boolean type;
     private String reason;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date recordedDate;
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
