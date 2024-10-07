@@ -2,10 +2,11 @@ package com.vandev.manage.controller;
 
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.pojo.Department;
+import com.vandev.manage.pojo.Score;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
+import com.vandev.manage.serviceImpl.ScoreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -32,7 +33,7 @@ public class EmployeeController {
     private DepartmentServiceImpl departmentServiceImpl;
 
     @Autowired
-    private ResourceLoader resourceLoader;
+    private ScoreServiceImpl scoreServiceImpl;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -50,10 +51,15 @@ public class EmployeeController {
                 employee.setImage(fileName);
             }
         }
-        List<Department> departments = departmentServiceImpl.getAllDepartments();
-        model.addAttribute("departments", departments);
         model.addAttribute("employeePage", employeePage);
         return "employee/index";
+    }
+
+    @GetMapping("/create")
+    public String createEmployee(Model model) {
+        model.addAttribute("departments", departmentServiceImpl.getAllDepartments());
+        model.addAttribute("employee", new Employee());
+        return "employee/create";
     }
 
     @PostMapping("/create")
@@ -90,7 +96,14 @@ public class EmployeeController {
     @GetMapping("/view/{id}")
     public String viewEmployee(@PathVariable("id") Integer id, Model model) {
         Employee employee = employeeServiceImpl.getEmployeeById(id);
+        List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(id);
+        int totalAchievements = (int) scores.stream().filter(score -> score.isType()).count();
+        int totalDisciplines = (int) scores.stream().filter(score -> !score.isType()).count();
+        int rewardScore = totalAchievements - totalDisciplines;
         employee.setImage("/"+employee.getImage());
+        model.addAttribute("totalAchievements", totalAchievements);
+        model.addAttribute("totalDisciplines", totalDisciplines);
+        model.addAttribute("rewardScore", rewardScore);
         model.addAttribute("employee", employee);
         return "employee/detail";
     }

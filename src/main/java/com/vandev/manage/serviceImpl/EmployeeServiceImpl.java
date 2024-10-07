@@ -88,16 +88,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> getEmployeesWithoutDepartment() {
         return employeeRepository.findByDepartmentIsNull();
     }
+    @Override
     public List<Employee> findAllById(List<Integer> ids) {
         return employeeRepository.findAllById(ids);
     }
 
-    // Thêm phương thức saveAll nếu chưa có
+    @Override
     public void saveAll(List<Employee> employees) {
         employeeRepository.saveAll(employees);
     }
+
     @Override
     public List<Employee> getEmployeesByDepartment(Department department) {
         return employeeRepository.findByDepartment(department);
+    }
+    @Override
+    public List<Employee> getTop10Employees() {
+        Pageable top10 = PageRequest.of(0, 10);
+        return employeeRepository.findTop10EmployeesByRewardPoints(top10);
     }
 }

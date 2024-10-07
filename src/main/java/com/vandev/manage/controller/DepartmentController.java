@@ -2,8 +2,10 @@ package com.vandev.manage.controller;
 
 import com.vandev.manage.pojo.Department;
 import com.vandev.manage.pojo.Employee;
+import com.vandev.manage.pojo.Score;
 import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
+import com.vandev.manage.serviceImpl.ScoreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,9 @@ public class DepartmentController {
 
     @Autowired
     private EmployeeServiceImpl employeeServiceImpl;
+
+    @Autowired
+    private ScoreServiceImpl scoreServiceImpl;
 
     @GetMapping
     public String listDepartments(Model model,
@@ -54,13 +59,30 @@ public class DepartmentController {
     public String viewDepartment(@PathVariable("id") Integer id, Model model) {
         Department department = departmentServiceImpl.getDepartmentById(id);
         List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
+        int totalAchievements = 0;
+        int totalDisciplines = 0;
+        int rewardScore = 0;
 
+        for (Employee employee : employees) {
+            List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(employee.getId());
+            totalAchievements += (int) scores.stream().filter(score -> score.isType()).count();
+            totalDisciplines += (int) scores.stream().filter(score -> !score.isType()).count();
+        }
+        rewardScore = (int) totalAchievements-totalDisciplines;
         model.addAttribute("department", department);
         model.addAttribute("employees", employees);
+        model.addAttribute("totalAchievements", totalAchievements);
+        model.addAttribute("totalDisciplines", totalDisciplines);
+        model.addAttribute("rewardScore", rewardScore);
 
         return "department/detail";
     }
-
+    @GetMapping("/create")
+    public String createEmployee(Model model) {
+        model.addAttribute("employees", employeeServiceImpl.getEmployeesWithoutDepartment());
+        model.addAttribute("department", new Department());
+        return "department/create";
+    }
     @GetMapping("/edit/{id}")
     public String editDepartment(@PathVariable("id") Integer id, Model model) {
         Department department = departmentServiceImpl.getDepartmentById(id);

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <title>Employee Scores</title>
+  <head th:insert="~{fragments/fragment::html_head}"></head>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div class="container my-4 pb-5">
+  <h2>Scores of Employee: <span th:text="${employee.fullName}"></span></h2>
+
+  <table class="table table-striped mt-4">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Type</th>
+      <th>Reason</th>
+      <th>Recorded Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="score, iterStat : ${scores}">
+      <td th:text="${iterStat.count}"></td>
+      <td th:text="${score.type ? 'Achievement' : 'Discipline'}"></td>
+      <td th:text="${score.reason}"></td>
+      <td th:text="${#dates.format(score.recordedDate, 'yyyy-MM-dd')}"></td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-between mt-4">
+    <a th:href="@{/employees/view/{id}(id=${employee.id})}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Back to employee detail
+    </a>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

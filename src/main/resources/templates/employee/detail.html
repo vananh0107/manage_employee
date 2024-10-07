@@ -54,14 +54,37 @@
                     <td th:if="${employee.department == null}">No Department Assigned</td>
                 </tr>
                 <tr>
-                    <th>Notes:</th>
-                    <td th:text="${employee.notes}"></td>
+                    <th>Total Achievements:</th>
+                    <td th:text="${totalAchievements}"></td>
+                </tr>
+                <tr>
+                    <th>Total Disciplines:</th>
+                    <td th:text="${totalDisciplines}"></td>
+                </tr>
+                <tr>
+                    <th>Reward Score:</th>
+                    <td th:text="${rewardScore}"></td>
+                </tr>
+                <tr>
+                    <th>Detail Score:</th>
+                    <td>
+                        <a th:href="@{/scores/employee/{id}(id=${employee.id})}">
+                            See
+                        </a>
+                    </td>
                 </tr>
             </table>
         </div>
     </div>
     <br>
-    <a href="#" class="btn btn-primary" th:href="@{/employees}">Back to Employees</a>
+    <div class="d-flex justify-content-between mt-4">
+        <a th:href="@{/employees}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+        <a th:href="@{/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+    </div>
 </div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

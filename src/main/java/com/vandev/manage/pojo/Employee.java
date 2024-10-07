@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -46,6 +47,8 @@ public class Employee {
 
     private String notes;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Score> scores;
     @ManyToOne
     @JoinColumn(name = "department_id",nullable = true)
     private Department department;

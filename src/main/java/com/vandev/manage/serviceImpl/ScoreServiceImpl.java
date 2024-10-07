@@ -5,6 +5,9 @@ import com.vandev.manage.repository.ScoreRepository;
 import com.vandev.manage.service.ScoreService;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,5 +76,10 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public List<Score> getAllScoresSortedByDate(){
         return scoreRepository.findAllByOrderByRecordedDateDesc();
+    }
+    @Override
+    public Page<Score> getPagedScores(Pageable pageable) {
+        Pageable fixedPageable = PageRequest.of(pageable.getPageNumber(), 8);
+        return scoreRepository.findAll(fixedPageable);
     }
 }

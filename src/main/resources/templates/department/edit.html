@@ -7,7 +7,8 @@
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
-<div class="container my-4">
+</div>
+<div class="container my-4 pb-5">
   <h2>Edit Department</h2>
 
   <form th:action="@{/departments/edit/{id}(id=${department.id})}" method="post">
