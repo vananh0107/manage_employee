@@ -107,4 +107,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Pageable top10 = PageRequest.of(0, 10);
         return employeeRepository.findTop10EmployeesByRewardPoints(top10);
     }
+    @Override
+    public List<Employee> getEmployeesWithoutUser(){
+        return employeeRepository.findByUsersIsNull();
+    }
 }

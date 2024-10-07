@@ -1,0 +1,23 @@
+package com.vandev.manage.controller;
+
+import com.vandev.manage.pojo.UserSystem;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class AuthController {
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
+    @GetMapping("/login")
+    public String login(Model model) {
+        model.addAttribute("user", new UserSystem());
+        return "login";
+    }
+    @GetMapping("/non-active")
+    public String showNonActivePage(Model model) {
+        return "non-active";
+    }
+}

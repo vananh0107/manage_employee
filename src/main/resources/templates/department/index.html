@@ -9,7 +9,7 @@
 <div class="container pb-5">
     <div class="d-flex justify-content-between align-items-center my-4">
         <h2>Departments</h2>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#departmentModal">Create Department</button>
+        <a th:href="@{/departments/create}" class="btn btn-info">Add Department</a>
     </div>
 
     <table class="table table-bordered">
@@ -56,40 +56,6 @@
             </li>
         </ul>
     </nav>
-</div>
-
-<div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="departmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form th:action="@{/departments/create}" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="departmentModalLabel">Create Department</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="departmentName" class="form-label">Department Name</label>
-                        <input type="text" name="name" class="form-control" id="departmentName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="employees" class="form-label">Select Employees</label>
-                        <div th:each="employee : ${employeesWithoutDepartment}">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" th:id="'employee' + ${employee.id}" th:value="${employee.id}" name="employeeIds">
-                                <label class="form-check-label" th:for="'employee' + ${employee.id}">
-                                    ID: <span th:text="${employee.id}"></span>, Name: <span th:text="${employee.fullName}"></span>, Birthday: <span th:text="${#dates.format(employee.birthDate, 'dd/MM/yyyy')}"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Create Department</button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

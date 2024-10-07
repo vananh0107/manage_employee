@@ -32,6 +32,8 @@ public class AccountManagementController {
     public String showAccountManagement(Model model) {
         List<UserSystem> users = userServiceImpl.findAllUsers();
         model.addAttribute("users", users);
+        List<Employee> availableEmployees = employeeServiceImpl.getEmployeesWithoutUser();
+        model.addAttribute("availableEmployees", availableEmployees);
         return "account-management";
     }
 
@@ -55,7 +57,6 @@ public class AccountManagementController {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Employee> employeePage = employeeServiceImpl.getPagedEmployees(pageable);
-
         model.addAttribute("employeePage", employeePage);
         return "user-edit";
     }

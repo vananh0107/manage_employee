@@ -52,4 +52,6 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "department_id",nullable = true)
     private Department department;
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    private UserSystem user;
 }

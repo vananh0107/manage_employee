@@ -19,4 +19,5 @@ public interface EmployeeService {
     void saveAll(List<Employee> employees);
     List<Employee> getEmployeesByDepartment(Department department);
     List<Employee> getTop10Employees();
+    List<Employee> getEmployeesWithoutUser();
 }
