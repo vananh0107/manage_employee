@@ -16,5 +16,5 @@ public interface EmployeeRepository  extends JpaRepository<Employee,Integer> {
             "GROUP BY e.id " +
             "ORDER BY (COUNT(CASE WHEN s.type = true THEN 1 END) - COUNT(CASE WHEN s.type = false THEN 1 END)) DESC")
     List<Employee> findTop10EmployeesByRewardPoints(Pageable pageable);
-    List<Employee> findByUsersIsNull();
+    List<Employee> findByUserIsNull();
 }

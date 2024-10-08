@@ -9,6 +9,7 @@ import com.vandev.manage.serviceImpl.ScoreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,7 +24,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 @Controller
-@RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
@@ -39,7 +39,7 @@ public class EmployeeController {
     public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields("image");
     }
-    @GetMapping
+    @GetMapping("/user/employees")
     public String listEmployees(Model model,
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "8") int size) {
@@ -47,7 +47,7 @@ public class EmployeeController {
         for (Employee employee : employeePage.getContent()) {
             String imagePath = employee.getImage();
             if (imagePath != null && !imagePath.isEmpty()) {
-                String fileName = "/"+imagePath.substring(imagePath.lastIndexOf("\\") + 1);
+                String fileName = "/"+imagePath;
                 employee.setImage(fileName);
             }
         }
@@ -55,14 +55,14 @@ public class EmployeeController {
         return "employee/index";
     }
 
-    @GetMapping("/create")
+    @GetMapping("/admin/employees/create")
     public String createEmployee(Model model) {
         model.addAttribute("departments", departmentServiceImpl.getAllDepartments());
         model.addAttribute("employee", new Employee());
         return "employee/create";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/admin/employees/create")
     public String createEmployee(@ModelAttribute Employee employee,
                                  @RequestParam("image") MultipartFile imageFile,
                                  @RequestParam("departmentId") String departmentId,
@@ -77,10 +77,10 @@ public class EmployeeController {
                 employee.setDepartment(department);
             }
             employeeServiceImpl.createEmployee(employee);
-            return "redirect:/employees";
+            return "redirect:/user/employees";
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("message", "Failed to upload image");
-            return "redirect:/employees";
+            return "redirect:/user/employees";
         }
     }
 
@@ -93,7 +93,7 @@ public class EmployeeController {
         return "images/"+customFileName;
     }
 
-    @GetMapping("/view/{id}")
+    @GetMapping("/user/employees/view/{id}")
     public String viewEmployee(@PathVariable("id") Integer id, Model model) {
         Employee employee = employeeServiceImpl.getEmployeeById(id);
         List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(id);
@@ -108,16 +108,17 @@ public class EmployeeController {
         return "employee/detail";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/admin/employees/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model) {
         Employee employee = employeeServiceImpl.getEmployeeById(id);
+        employee.setImage("/"+employee.getImage());
         model.addAttribute("employee", employee);
         List<Department> departments = departmentServiceImpl.getAllDepartments();
         model.addAttribute("departments", departments);
         return "employee/edit";
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/admin/employees/edit/{id}")
     public String updateEmployee(@PathVariable("id") Integer id,
                                  @ModelAttribute Employee employee,
                                  @RequestParam("image") MultipartFile imageFile,
@@ -129,7 +130,10 @@ public class EmployeeController {
             if (!imageFile.isEmpty()) {
                 if (existingEmployee.getImage() != null && !existingEmployee.getImage().isEmpty()) {
                     Path oldImagePath = Paths.get(existingEmployee.getImage());
-                    Files.deleteIfExists(oldImagePath);
+                    if (oldImagePath != null) {
+                        Path fullOldImagePath = Paths.get("C:/Users/anhbv/code/manage_employee/src/main/resources/upload_images/" + oldImagePath);
+                        Files.deleteIfExists(fullOldImagePath);
+                    }
                 }
                 String newImagePath = saveImageWithTimestamp(imageFile);
                 employee.setImage(newImagePath);
@@ -143,14 +147,14 @@ public class EmployeeController {
                 employee.setDepartment(department);
             }
             employeeServiceImpl.updateEmployee(id, employee);
-            return "redirect:/employees";
+            return "redirect:/user/employees";
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update employee or handle image file.");
-            return "redirect:/employees";
+            return "redirect:/user/employees";
         }
     }
-
-    @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/employees/delete/{id}")
     public String deleteEmployee(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {
             Employee employee = employeeServiceImpl.getEmployeeById(id);
@@ -164,6 +168,6 @@ public class EmployeeController {
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete image file.");
         }
-        return "redirect:/employees";
+        return "redirect:/user/employees";
     }
 }

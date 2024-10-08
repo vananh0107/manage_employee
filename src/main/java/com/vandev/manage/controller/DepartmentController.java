@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/departments")
 public class DepartmentController {
 
     @Autowired
@@ -28,18 +27,16 @@ public class DepartmentController {
     @Autowired
     private ScoreServiceImpl scoreServiceImpl;
 
-    @GetMapping
+    @GetMapping("/user/departments")
     public String listDepartments(Model model,
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size) {
         Page<Department> departmentPage = departmentServiceImpl.findPaginated(page, size);
         model.addAttribute("departmentPage", departmentPage);
-        List<Employee> employeesWithoutDepartment = employeeServiceImpl.getEmployeesWithoutDepartment();
-        model.addAttribute("employeesWithoutDepartment", employeesWithoutDepartment);
         model.addAttribute("employeeServiceImpl", employeeServiceImpl);
         return "department/index";
     }
-    @PostMapping("/create")
+    @PostMapping("/admin/departments/create")
     public String createDepartment(@ModelAttribute Department department,
                                    @RequestParam(value = "employeeIds", required = false) List<Integer> employeeIds,
                                    RedirectAttributes redirectAttributes) {
@@ -53,9 +50,9 @@ public class DepartmentController {
 
         redirectAttributes.addFlashAttribute("successMessage", "Department created successfully!");
 
-        return "redirect:/departments";
+        return "redirect:/user/departments";
     }
-    @GetMapping("/view/{id}")
+    @GetMapping("/user/departments/view/{id}")
     public String viewDepartment(@PathVariable("id") Integer id, Model model) {
         Department department = departmentServiceImpl.getDepartmentById(id);
         List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
@@ -77,13 +74,14 @@ public class DepartmentController {
 
         return "department/detail";
     }
-    @GetMapping("/create")
+    @GetMapping("/admin/departments/create")
     public String createEmployee(Model model) {
-        model.addAttribute("employees", employeeServiceImpl.getEmployeesWithoutDepartment());
+        List<Employee> employeesWithoutDepartment = employeeServiceImpl.getEmployeesWithoutDepartment();
+        model.addAttribute("employees", employeesWithoutDepartment);
         model.addAttribute("department", new Department());
         return "department/create";
     }
-    @GetMapping("/edit/{id}")
+    @GetMapping("/admin/departments/edit/{id}")
     public String editDepartment(@PathVariable("id") Integer id, Model model) {
         Department department = departmentServiceImpl.getDepartmentById(id);
         List<Employee> employeesInDepartment = employeeServiceImpl.getEmployeesByDepartment(department);
@@ -96,7 +94,7 @@ public class DepartmentController {
         return "department/edit";
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/admin/departments/edit/{id}")
     public String updateDepartment(@PathVariable("id") Integer id,
                                    @ModelAttribute Department department,
                                    @RequestParam(value = "currentEmployeeIds", required = false) List<Integer> currentEmployeeIds,
@@ -120,9 +118,9 @@ public class DepartmentController {
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "Department updated successfully!");
-        return "department/index";
+        return "redirect:/user/departments";
     }
-    @PostMapping("/delete/{id}")
+    @GetMapping("/admin/departments/delete/{id}")
     public String deleteDepartment(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         Department department = departmentServiceImpl.getDepartmentById(id);
         if (department != null) {
@@ -131,7 +129,7 @@ public class DepartmentController {
             employeeServiceImpl.saveAll(employees);
             departmentServiceImpl.deleteDepartment(id);
         }
-        return "redirect:/departments";
+        return "redirect:/user/departments";
     }
 }
 

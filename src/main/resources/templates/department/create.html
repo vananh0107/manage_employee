@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Add Employee</title>
+    <title th:text="#{employee.add}"></title>
     <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
-<form th:action="@{/departments/create}" method="post" class="container mt-5 pb-5">
+<form th:action="@{/admin/departments/create}" method="post" class="container mt-5 pb-5">
     <div class="modal-header">
-        <h5 class="modal-title" id="departmentModalLabel">Create Department</h5>
+        <h5 class="modal-title" id="departmentModalLabel" th:text="#{department.add}"></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
         <div class="mb-3">
-            <label for="departmentName" class="form-label">Department Name</label>
+            <label for="departmentName" class="form-label" th:text="#{department.table.name}"></label>
             <input type="text" name="name" class="form-control" id="departmentName" required>
         </div>
         <div class="mb-3">
-            <label for="employees" class="form-label">Select Employees</label>
-            <div th:each="employee : ${employeesWithoutDepartment}">
+            <label class="form-label" th:text="#{employee.select}"></label>
+            <div th:each="employee : ${employees}">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" th:id="'employee' + ${employee.id}" th:value="${employee.id}" name="employeeIds">
                     <label class="form-check-label" th:for="'employee' + ${employee.id}">
-                        ID: <span th:text="${employee.id}"></span>, Name: <span th:text="${employee.fullName}"></span>, Birthday: <span th:text="${#dates.format(employee.birthDate, 'dd/MM/yyyy')}"></span>
+                        ID: <span th:text="${employee.id}"></span>, <span th:text="#{employee.name}"></span> <span th:text="${employee.fullName}"></span>, <span th:text="#{employee.birthDay}"></span> <span th:text="${#dates.format(employee.birthDate, 'dd/MM/yyyy')}"></span>
                     </label>
                 </div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Create Department</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{action.close}"></button>
+        <button type="submit" class="btn btn-primary" th:text="#{department.add}"></button>
     </div>
 </form>
 <footer th:replace="~{fragments/footer :: footer}"></footer>

@@ -19,23 +19,11 @@ import java.util.Optional;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final EmployeeRepository employeeRepository;
-    private final UserService userService;
-
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, UserService userService) {
-        this.employeeRepository = employeeRepository;
-        this.userService = userService;
-    }
+    private  EmployeeRepository employeeRepository;
 
     @Override
     public Employee createEmployee(Employee employee) {
-//        UserSystem currentUser = userService.getCurrentUser();
-
-//        if (!currentUser.getRole().equals("admin")) {
-//            throw new ValidationException("Only admins can create employees.");
-//        }
-
         return employeeRepository.save(employee);
     }
 
@@ -109,6 +97,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     @Override
     public List<Employee> getEmployeesWithoutUser(){
-        return employeeRepository.findByUsersIsNull();
+        return employeeRepository.findByUserIsNull();
     }
 }

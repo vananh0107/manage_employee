@@ -9,36 +9,36 @@
 
 </div>
 <div class="container my-4 pb-5">
-  <h2>Edit Department</h2>
+  <h2 th:text="#{department.edit}"></h2>
 
-  <form th:action="@{/departments/edit/{id}(id=${department.id})}" method="post">
+  <form th:action="@{/admin/departments/edit/{id}(id=${department.id})}" method="post">
     <div class="mb-3">
-      <label for="departmentName" class="form-label">Department Name</label>
+      <label for="departmentName" class="form-label" th:text="#{department.table.name}"></label>
       <input type="text" class="form-control" id="departmentName" name="name" th:value="${department.name}" required>
     </div>
 
-    <h4>Current Employees in Department:</h4>
+    <h4 th:text="#{department.employeeExsist}"></h4>
     <div th:each="employee : ${employeesInDepartment}">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" th:id="'employeeCurrent' + ${employee.id}" th:value="${employee.id}" name="currentEmployeeIds" checked />
         <label class="form-check-label" th:for="'employeeCurrent' + ${employee.id}">
-          ID: <span th:text="${employee.id}"></span>, Name: <span th:text="${employee.fullName}"></span>
+          ID: <span th:text="${employee.id}"></span>, <span th:text="#{employee.name}"><span th:text="${employee.fullName}"></span></span>
         </label>
       </div>
     </div>
 
-    <h4>Add Employees:</h4>
+    <h4 th:text="#{employee.add}"></h4>
     <div th:each="employee : ${employeesWithoutDepartment}">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" th:id="'employeeNew' + ${employee.id}" th:value="${employee.id}" name="newEmployeeIds" />
         <label class="form-check-label" th:for="'employeeNew' + ${employee.id}">
-          ID: <span th:text="${employee.id}"></span>, Name: <span th:text="${employee.fullName}"></span>
+          ID: <span th:text="${employee.id}"></span>,<span th:text="#{employee.name}"><span th:text="${employee.fullName}"></span> </span>
         </label>
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Update Department</button>
-    <a href="#" class="btn btn-secondary" th:href="@{/departments}">Cancel</a>
+    <button type="submit" class="btn btn-primary" th:text="#{department.edit}"></button>
+    <a href="#" class="btn btn-secondary" th:href="@{/user/departments}" th:text="#{action.cancel}"></a>
   </form>
 </div>
 

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/scores")
 public class ScoreController {
 
     @Autowired
@@ -30,7 +29,7 @@ public class ScoreController {
     @Autowired
     private DepartmentServiceImpl departmentServiceImpl;
 
-    @GetMapping
+    @GetMapping("/user/scores")
     public String listScores(Model model,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "8") int size){
@@ -40,7 +39,7 @@ public class ScoreController {
         model.addAttribute("scorePage", scorePage);
         return "score/index";
     }
-    @PostMapping("/create")
+    @PostMapping("/admin/scores/create")
     public String createScore(@ModelAttribute Score score,
                               RedirectAttributes redirectAttributes) {
         try {
@@ -50,23 +49,23 @@ public class ScoreController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to create score.");
         }
 
-        return "redirect:/scores";
+        return "redirect:/user/scores";
     }
-    @GetMapping("/view/{id}")
+    @GetMapping("/user/scores/view/{id}")
     public String viewScore(@PathVariable("id") Integer id, Model model) {
         Score score = scoreServiceImpl.getScoreById(id);
         if (score == null) {
-            return "redirect:/scores";
+            return "redirect:/user/scores";
         }
         model.addAttribute("score", score);
         return "score/detail";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/admin/scores/edit/{id}")
     public String editScore(@PathVariable("id") Integer id, Model model) {
         Score score = scoreServiceImpl.getScoreById(id);
         if (score == null) {
-            return "redirect:/scores";
+            return "redirect:/user/scores";
         }
 
         List<Employee> employees = employeeServiceImpl.getAllEmployees();
@@ -75,29 +74,29 @@ public class ScoreController {
         return "score/edit";
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/admin/scores/edit/{id}")
     public String updateScore(@PathVariable("id") Integer id,
                               @ModelAttribute Score score) {
         scoreServiceImpl.updateScore(id, score);
-        return "redirect:/scores";
+        return "redirect:/user/scores";
     }
-    @PostMapping("/delete/{id}")
+    @GetMapping("/admin/scores/delete/{id}")
     public String deleteScore(@PathVariable("id") Integer id) {
         scoreServiceImpl.deleteScore(id);
-        return "redirect:/scores";
+        return "redirect:/user/scores";
     }
-    @GetMapping("/employee/{id}")
+    @GetMapping("/user/scores/employee/{id}")
     public String getEmployeeScores(@PathVariable("id") Integer id, Model model) {
         Employee employee = employeeServiceImpl.getEmployeeById(id);
         if (employee == null) {
-            return "redirect:/employees";
+            return "redirect:/user/employees";
         }
         List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(id);
         model.addAttribute("employee", employee);
         model.addAttribute("scores", scores);
         return "score/employee";
     }
-    @GetMapping("/department/{id}")
+    @GetMapping("/user/scores/department/{id}")
     public String viewDepartmentScores(@PathVariable("id") Integer id, Model model) {
         Department department = departmentServiceImpl.getDepartmentById(id);
         List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
@@ -109,5 +108,11 @@ public class ScoreController {
         model.addAttribute("department", department);
         model.addAttribute("scores", scores);
         return "score/department";
+    }
+    @GetMapping("/admin/scores/create")
+    public String createEmployee(Model model) {
+        model.addAttribute("employees", employeeServiceImpl.getAllEmployees());
+        model.addAttribute("score", new Score());
+        return "score/create";
     }
 }

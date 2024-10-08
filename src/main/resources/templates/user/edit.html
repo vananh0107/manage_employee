@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Account Management</title>
+  <head th:insert="~{fragments/fragment::html_head}"></head>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"></header>
+<div class="container mt-5">
+  <h2>Edit User</h2>
+
+  <form th:action="@{/admin/users/edit/{id}(id=${user.id})}" method="post">
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" id="username" th:value="${user.username}" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="role" class="form-label">Role</label>
+      <input type="text" class="form-control" id="role" th:value="${user.role}" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="active" class="form-label">Active Status</label>
+      <select class="form-select" id="active" name="active">
+        <option th:value="true" th:selected="${user.active}">Active</option>
+        <option th:value="false" th:selected="${!user.active}">Inactive</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="employee" class="form-label">Assign Employee</label>
+      <select class="form-select" id="employee" name="employeeId">
+        <option value="">None</option>
+        <option th:each="employee : ${employees}"
+                th:value="${employee.id}"
+                th:text="${employee.fullName}"
+                th:selected="${employee.id == user.employee?.id}">
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update</button>
+    <a href="/admin/users" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

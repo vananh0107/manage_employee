@@ -39,14 +39,10 @@ public class RegisterController {
         if (result.hasErrors()) {
             return "register";
         }
-
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         user.setRole("ROLE_USER");
         user.setActive(false);
         userServiceImpl.save(user);
-
-        model.addAttribute("successMessage", "Bạn đã đăng ký thành công. Bạn sẽ được chuyển hướng sau 2 giây.");
-
         return "redirect:/login";
     }
 

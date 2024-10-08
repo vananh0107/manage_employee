@@ -5,63 +5,55 @@ import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin")
-public class AccountManagementController {
+@RequestMapping("/admin/users")
+public class UserController {
 
     private final UserServiceImpl userServiceImpl;
     private final EmployeeServiceImpl employeeServiceImpl;
 
     @Autowired
-    public AccountManagementController(UserServiceImpl userServiceImpl, EmployeeServiceImpl employeeServiceImpl) {
+    public UserController(UserServiceImpl userServiceImpl, EmployeeServiceImpl employeeServiceImpl) {
         this.employeeServiceImpl = employeeServiceImpl;
         this.userServiceImpl = userServiceImpl;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/account-management")
+    @GetMapping()
     public String showAccountManagement(Model model) {
         List<UserSystem> users = userServiceImpl.findAllUsers();
         model.addAttribute("users", users);
         List<Employee> availableEmployees = employeeServiceImpl.getEmployeesWithoutUser();
         model.addAttribute("availableEmployees", availableEmployees);
-        return "account-management";
+        return "user/index";
     }
 
-    @PostMapping("/account-management/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") Integer id) {
         userServiceImpl.deleteUserById(id);
-        return "redirect:/admin/account-management";
-    }
-
-    @PostMapping("/users/{id}/activate")
-    public String activateUser(@PathVariable Integer id) {
-        userServiceImpl.setActive(id, true);
         return "redirect:/admin/users";
     }
-    @GetMapping("/users/edit/{id}")
-    public String showEditUserForm(@PathVariable Integer id, Model model,
-                                   @RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "5") int size) {
+    @GetMapping("/view/{id}")
+    public String viewUserDetails(@PathVariable Integer id, Model model) {
         UserSystem user = userServiceImpl.getUserById(id);
         model.addAttribute("user", user);
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Employee> employeePage = employeeServiceImpl.getPagedEmployees(pageable);
-        model.addAttribute("employeePage", employeePage);
-        return "user-edit";
+        model.addAttribute("employee", user.getEmployee());
+        return "user/view";
     }
+    @GetMapping("/edit/{id}")
+    public String showEditUserForm(@PathVariable Integer id, Model model) {
+        UserSystem user = userServiceImpl.getUserById(id);
+        model.addAttribute("user", user);
+        List<Employee> employees = employeeServiceImpl.getEmployeesWithoutUser();
+        model.addAttribute("employees", employees);
 
-    @PostMapping("/users/edit/{id}")
+        return "user/edit";
+    }
+    @PostMapping("/edit/{id}")
     public String updateUser(@PathVariable Integer id,
                              @RequestParam("active") Boolean active,
                              @RequestParam("employeeId") Integer employeeId) {
@@ -69,6 +61,6 @@ public class AccountManagementController {
 
         userServiceImpl.updateUser(user, active, employeeId);
 
-        return "redirect:/admin/account-management";
+        return "redirect:/admin/users";
     }
 }

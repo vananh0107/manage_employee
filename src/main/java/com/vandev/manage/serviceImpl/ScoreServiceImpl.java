@@ -16,12 +16,8 @@ import java.util.Optional;
 @Service
 public class ScoreServiceImpl implements ScoreService {
 
-    private final ScoreRepository scoreRepository;
-
     @Autowired
-    public ScoreServiceImpl(ScoreRepository scoreRepository) {
-        this.scoreRepository = scoreRepository;
-    }
+    private  ScoreRepository scoreRepository;
 
     @Override
     public Score createScore(Score score) {
@@ -63,20 +59,12 @@ public class ScoreServiceImpl implements ScoreService {
                 .orElseThrow(() -> new IllegalArgumentException("Point record not found."));
     }
 
-    @Override
-    public List<Score> getAllScore() {
-        return scoreRepository.findAll();
-    }
-
 
     @Override
     public List<Score> getScoreByEmployeeId(Integer employeeId) {
         return scoreRepository.findByEmployee_Id(employeeId);
     }
-    @Override
-    public List<Score> getAllScoresSortedByDate(){
-        return scoreRepository.findAllByOrderByRecordedDateDesc();
-    }
+
     @Override
     public Page<Score> getPagedScores(Pageable pageable) {
         Pageable fixedPageable = PageRequest.of(pageable.getPageNumber(), 8);

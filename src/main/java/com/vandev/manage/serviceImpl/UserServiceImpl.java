@@ -18,13 +18,10 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final EmployeeRepository employeeRepository;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, EmployeeRepository employeeRepository) {
-        this.userRepository = userRepository;
-        this.employeeRepository = employeeRepository;
-    }
+    private  UserRepository userRepository;
+    @Autowired
+    private  EmployeeRepository employeeRepository;
 
     @Override
     public Optional<UserSystem> findByUsername(String username) {
@@ -40,17 +37,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
     @Override
-    @Transactional
-    public UserSystem createUser(UserSystem user, Integer employeeId) {
-        UserSystem currentUser = getCurrentUser();
-        if (!currentUser.getRole().equals("admin")) {
-            throw new SecurityException("Chỉ admin mới có quyền tạo người dùng.");
-        }
-        return userRepository.save(user);
-    }
-    @Override
     public void save(UserSystem user) {
-        System.out.println("Saving user: " + user.getUsername());
         userRepository.save(user);
     }
     @Override
@@ -67,14 +54,6 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Override
-    public void setActive(Integer id, boolean active) {
-        Optional<UserSystem> userOptional = userRepository.findById(id);
-        userOptional.ifPresent(user -> {
-            user.setActive(active);
-            userRepository.save(user);
-        });
-    }
     @Override
     public UserSystem getUserById(Integer id) {
         return userRepository.findById(id)

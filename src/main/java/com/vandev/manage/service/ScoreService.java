@@ -11,8 +11,6 @@ public interface ScoreService {
     Score updateScore(Integer pointId, Score score);
     void deleteScore(Integer pointId);
     Score getScoreById(Integer pointId);
-    List<Score> getAllScore();
     List<Score> getScoreByEmployeeId(Integer employeeId);
-    List<Score> getAllScoresSortedByDate();
     Page<Score> getPagedScores(Pageable pageable);
 }

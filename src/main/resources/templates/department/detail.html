@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Department Details</title>
+    <title th:text="#{department.detail}"></title>
     <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
@@ -9,41 +9,40 @@
 
 <div class="container my-4 pb-5">
     <br>
-    <h2>Department name:  <span th:text="${department.name}"></span></h2>
+    <h2 th:text="#{department.table.name}"><span th:text="${department.name}"></span></h2>
     <br>
-    <h4>Statistics:</h4>
+    <h4 th:text="#{department.static}"></h4>
     <table class="table">
         <tr>
-            <th>Total Achievements:</th>
+            <th th:text="#{total_achieve}"></th>
             <td th:text="${totalAchievements}"></td>
         </tr>
         <tr>
-            <th>Total Disciplines:</th>
+            <th th:text="#{total_discipline}"></th>
             <td th:text="${totalDisciplines}"></td>
         </tr>
         <tr>
-            <th>Reward Score:</th>
+            <th th:text="#{reward_scode}"></th>
             <td th:text="${rewardScore}"></td>
         </tr>
         <tr>
-            <th>Detail:</th>
+            <th th:text="#{action.detail}">Detail:</th>
             <td>
-                <a th:href="@{/scores/department/{id}(id=${department.id})}">
-                    See
+                <a th:href="@{/user/scores/department/{id}(id=${department.id})}" th:text="#{action.view}">
                 </a>
             </td>
         </tr>
     </table>
     <br>
-    <h4>Employee list:</h4>
+    <h4 th:text="#{employee.list}"></h4>
     <table class="table table-bordered">
         <thead>
         <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Birthday</th>
+            <th th:text="#{employee.name}"></th>
+            <th th:text="#{employee.birthDay}"></th>
             <th>Email</th>
-            <th>Phone</th>
+            <th th:text="#{employee.phone}"></th>
         </tr>
         </thead>
         <tbody>
@@ -57,11 +56,9 @@
         </tbody>
     </table>
     <div class="d-flex justify-content-between mt-4">
-        <a th:href="@{/departments}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to List
+        <a th:href="@{/user/departments}" class="btn btn-secondary" th:text="#{action.back}">
         </a>
-        <a th:href="@{/departments/edit/{id}(id=${department.id})}" class="btn btn-warning">
-            <i class="bi bi-pencil"></i> Edit
+        <a th:href="@{/admin/departments/edit/{id}(id=${department.id})}" class="btn btn-warning" th:text="#{action.edit}" >
         </a>
     </div>
 </div>

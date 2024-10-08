@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Score</title>
+    <head th:insert="~{fragments/fragment::html_head}"></head>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"></header>
+
+<form th:action="@{/admin/scores/create}" method="post" class="container mt-5 pb-5">
+    <div class="mb-3">
+        <label for="employeeId" class="form-label">Employee</label>
+        <select class="form-select" id="employeeId" name="employee.id" required>
+            <option value="" disabled selected>Select an Employee</option>
+            <option th:each="employee : ${employees}"
+                    th:value="${employee.id}"
+                    th:text="${employee.fullName}"></option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="type" class="form-label">Type</label>
+        <select class="form-select" id="type" name="type" required>
+            <option value="true">Achievement</option>
+            <option value="false">Discipline</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="recordedDate" class="form-label">Recorded Date</label>
+        <input type="date" class="form-control" id="recordedDate" name="recordedDate" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="reason" class="form-label">Reason</label>
+        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
