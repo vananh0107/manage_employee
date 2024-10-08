@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>Employee Scores</title>
+  <title th:text="#{score.employee}"></title>
   <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
 <div class="container my-4 pb-5">
-  <h2>Scores of Employee: <span th:text="${employee.fullName}"></span></h2>
-
+  <h2><span th:text="#{score.employeeOf}"></span> <span th:text="${employee.fullName}"></span></h2>
   <table class="table table-striped mt-4">
     <thead>
     <tr>
       <th>#</th>
-      <th>Type</th>
-      <th>Reason</th>
-      <th>Recorded Date</th>
+      <th th:text="#{score.type}"></th>
+      <th th:text="#{score.reason}"></th>
+      <th th:text="#{score.recordDate}"></th>
     </tr>
     </thead>
     <tbody>
@@ -30,7 +29,7 @@
   </table>
   <div class="d-flex justify-content-between mt-4">
     <a th:href="@{/user/employees/view/{id}(id=${employee.id})}" class="btn btn-secondary">
-      <i class="bi bi-arrow-left"></i> Back to employee detail
+      <i class="bi bi-arrow-left" th:text="#{score.back}"></i>
     </a>
   </div>
 </div>

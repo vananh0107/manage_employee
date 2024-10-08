@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>View Score</title>
+  <title th:text="#{score.detail}"></title>
   <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
 <div class="container my-5">
-  <h2>Score Details</h2>
+  <h2 th:text="#{score.detail}"></h2>
 
   <div class="row mb-3">
     <div class="col-md-6">
-      <label for="employeeName" class="form-label">Employee</label>
+      <label for="employeeName" class="form-label" th:text="#{employee}"></label>
       <input type="text" class="form-control" id="employeeName" th:value="${score.employee.fullName}" readonly>
     </div>
     <div class="col-md-6">
-      <label for="scoreType" class="form-label">Type</label>
+      <label for="scoreType" class="form-label" th:text="#{score.type}"></label>
       <input type="text" class="form-control" id="scoreType"
              th:value="${score.type ? 'Achievement' : 'Discipline'}" readonly>
     </div>
@@ -24,14 +24,14 @@
 
   <div class="row mb-3">
     <div class="col-md-12">
-      <label for="reason" class="form-label">Reason</label>
+      <label for="reason" class="form-label" th:text="#{score.reason}"></label>
       <textarea class="form-control" id="reason" rows="3" th:text="${score.reason}" readonly></textarea>
     </div>
   </div>
 
   <div class="row mb-3">
     <div class="col-md-6">
-      <label for="recordedDate" class="form-label">Recorded Date</label>
+      <label for="recordedDate" class="form-label" th:text="#{score.recordDate}"></label>
       <input type="text" class="form-control" id="recordedDate"
              th:value="${#dates.format(score.recordedDate, 'yyyy-MM-dd')}" readonly>
     </div>
@@ -39,10 +39,10 @@
 
   <div class="d-flex justify-content-between mt-4">
     <a th:href="@{/user/scores}" class="btn btn-secondary">
-      <i class="bi bi-arrow-left"></i> Back to List
+      <span th:text="#{action.back}"></span>
     </a>
     <a th:href="@{/admin/scores/edit/{id}(id=${score.id})}" class="btn btn-warning">
-      <i class="bi bi-pencil"></i> Edit
+      <span th:text="#{action.edit}"></span>
     </a>
   </div>
 </div>

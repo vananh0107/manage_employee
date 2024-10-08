@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Department Scores</title>
+    <title th:text="#{score.department}"></title>
     <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
 <div class="container my-4">
-    <h2>Scores of Employees in Department: <span th:text="${department.name}"></span></h2>
+    <h2>  <span th:text="#{score.employeeInDepartment]"></span> <span th:text="${department.name}"></span></h2>
     <br>
 
     <table class="table table-bordered">
         <thead>
         <tr>
-            <th>Employee Name</th>
-            <th>Type</th>
-            <th>Reason</th>
-            <th>Recorded Date</th>
+            <th th:text="#{employeeName}"></th>
+            <th th:text="#{score.type}"></th>
+            <th th:text="#{score.reason}"></th>
+            <th th:text="#{score.recordDate}"></th>
         </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
 
     <div class="d-flex justify-content-between mt-4">
         <a th:href="@{/user/departments/view/{id}(id=${department.id})}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Department Detail
+            <span th:text="#{score.backToDepartmentDetail}"></span>
         </a>
     </div>
 </div>

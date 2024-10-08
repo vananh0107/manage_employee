@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Employee Management</title>
+  <title th:text="#{employee.add}"></title>
   <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 <form th:action="@{/admin/employees/create}" method="post" enctype="multipart/form-data" class="container mt-5 pb-5">
   <div class="modal-header">
-    <h5 class="modal-title" id="employeeModalLabel">Add Employee</h5>
+    <h5 class="modal-title" id="employeeModalLabel" th:text="#{employee.add}"></h5>
   </div>
   <div class="modal-body">
     <div class="mb-3">
-      <label for="fullName" class="form-label">Full Name</label>
+      <label for="fullName" class="form-label" th:text="#{employee.fullname}">/label>
       <input type="text" name="fullName" class="form-control" id="fullName" required>
     </div>
     <div class="mb-3">
-      <label for="gender" class="form-label">Gender</label>
+      <label for="gender" class="form-label" th:text="#{employee.gender}"></label>
       <select name="gender" class="form-control" id="gender" required>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
+        <option value="Male" th:text="#{employee.male.male}"></option>
+        <option value="Female" th:text="#{employee.male.female}"></option>
       </select>
     </div>
     <div class="mb-3">
-      <label for="birthDate" class="form-label">Birthdate</label>
+      <label for="birthDate" class="form-label" th:text="#{employee.male.birthDay}"></label>
       <input type="date" name="birthDate" class="form-control" id="birthDate" required>
     </div>
     <div class="mb-3">
-      <label for="salary" class="form-label">Salary</label>
+      <label for="salary" class="form-label" th:text="#{employee.salary}"></label>
       <input type="number" name="salary" class="form-control" id="salary" required>
     </div>
     <div class="mb-3">
-      <label for="level" class="form-label">Level</label>
+      <label for="level" class="form-label" th:text="#{employee.level}"></label>
       <input type="number" name="level" class="form-control" id="level" min="1" max="10" required>
     </div>
     <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
+      <label for="email" class="form-label" >Email</label>
       <input type="email" name="email" class="form-control" id="email" required>
     </div>
     <div class="mb-3">
-      <label for="phone" class="form-label">Phone</label>
+      <label for="phone" class="form-label" th:text="#{employee.phone}"></label>
       <input type="text" name="phone" class="form-control" id="phone" required pattern="^09[0-9]{8}$">
     </div>
     <div class="mb-3">
-      <label for="department" class="form-label">Department</label>
+      <label for="department" class="form-label" th:text="#{employee.department}"></label>
       <select class="form-select" id="department" name="departmentId">
-        <option value="" selected>No Department Assigned</option>
+        <option value="" selected th:text="#{employee.noDepartment}"></option>
         <option th:each="department : ${departments}"
                 th:value="${department.id}"
                 th:text="${department.name != null ? department.name : 'Unnamed Department'}">
@@ -53,17 +53,17 @@
       </select>
     </div>
     <div class="mb-3">
-      <label for="notes" class="form-label">Notes</label>
+      <label for="notes" class="form-label" th:text="#{employee.notes}"></label>
       <textarea name="notes" class="form-control" id="notes"></textarea>
     </div>
     <div class="mb-3">
-      <label for="image" class="form-label">Image</label>
+      <label for="image" class="form-label" th:text="#{employee.image}"></label>
       <input type="file" name="image" class="form-control" id="image">
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{action.close}"></button>
+    <button type="submit" class="btn btn-primary" th:text="#{action.save}"></button>
   </div>
 </form>
 <footer th:replace="~{fragments/footer :: footer}"></footer>

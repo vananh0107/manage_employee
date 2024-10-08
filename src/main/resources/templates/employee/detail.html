@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Employee Details</title>
+    <title th:text="#{employee.detail}"></title>
     <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
@@ -9,27 +9,27 @@
 
 <div class="container my-4 pb-5">
     <br>
-    <h2>Employee Details</h2>
+    <h2 th:text="#{employee.detail}"></h2>
     <br>
 
     <div class="row">
         <div class="col-md-4">
             <img th:src="${employee.image}" alt="Employee Image" class="img-fluid rounded"
                  th:if="${employee.image != null}"/>
-            <p th:if="${employee.image == null}">No Image Available</p>
+            <p th:if="${employee.image == null}" th:text="#{employee.noImage}"></p>
         </div>
         <div class="col-md-8">
             <table class="table table-striped">
                 <tr>
-                    <th>Full Name:</th>
+                    <th th:text="#{employee.fullname}"></th>
                     <td th:text="${employee.fullName}"></td>
                 </tr>
                 <tr>
-                    <th>Gender:</th>
+                    <th th:text="#{employee.gender}"></th>
                     <td th:text="${employee.gender}"></td>
                 </tr>
                 <tr>
-                    <th>Birthday:</th>
+                    <th th:text="#{employee.birthDay}"></th>
                     <td th:text="${#dates.format(employee.birthDate, 'dd/MM/yyyy')}"></td>
                 </tr>
                 <tr>
@@ -37,39 +37,38 @@
                     <td th:text="${employee.email}"></td>
                 </tr>
                 <tr>
-                    <th>Phone:</th>
+                    <th th:text="#{employee.phone}"></th>
                     <td th:text="${employee.phone}"></td>
                 </tr>
                 <tr>
-                    <th>Salary:</th>
+                    <th th:text="#{employee.salary}"></th>
                     <td th:text="${employee.salary}"></td>
                 </tr>
                 <tr>
-                    <th>Level:</th>
+                    <th th:text="#{employee.level}"></th>
                     <td th:text="${employee.level}"></td>
                 </tr>
                 <tr>
-                    <th>Department:</th>
+                    <th th:text="#{employee.department}"></th>
                     <td th:if="${employee.department != null}" th:text="${employee.department.name}"></td>
-                    <td th:if="${employee.department == null}">No Department Assigned</td>
+                    <td th:if="${employee.department == null}" th:text="${employee.department.noDepartment}"></td>
                 </tr>
                 <tr>
-                    <th>Total Achievements:</th>
+                    <th th:text="${total_achieve}"></th>
                     <td th:text="${totalAchievements}"></td>
                 </tr>
                 <tr>
-                    <th>Total Disciplines:</th>
+                    <th th:text="${total_discipline}"></th>
                     <td th:text="${totalDisciplines}"></td>
                 </tr>
                 <tr>
-                    <th>Reward Score:</th>
+                    <th th:text="${reward_score}"></th>
                     <td th:text="${rewardScore}"></td>
                 </tr>
                 <tr>
-                    <th>Detail Score:</th>
+                    <th th:text="${score.detail}"></th>
                     <td>
-                        <a th:href="@{/user/scores/employee/{id}(id=${employee.id})}">
-                            See
+                        <a th:href="@{/user/scores/employee/{id}(id=${employee.id})}" th:text="${action.view}">
                         </a>
                     </td>
                 </tr>
@@ -78,11 +77,9 @@
     </div>
     <br>
     <div class="d-flex justify-content-between mt-4">
-        <a th:href="@{/user/employees}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to List
+        <a th:href="@{/user/employees}" class="btn btn-secondary" th:text="${action.back}">
         </a>
-        <a th:href="@{/admin/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning">
-            <i class="bi bi-pencil"></i> Edit
+        <a th:href="@{/admin/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning" th:text="${action.edit}">
         </a>
     </div>
 </div>

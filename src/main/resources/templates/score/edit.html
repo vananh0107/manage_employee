@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Edit Score</title>
+    <title th:text="#{score.edit}"></title>
     <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
 <div class="container my-5">
-    <h2>Edit Score</h2>
+    <h2 th:text="#{score.edit}"></h2>
 
     <form th:action="@{/admin/scores/edit/{id}(id=${score.id})}" method="post">
         <div class="row mb-3">
             <div class="col-md-4">
-                <label for="employeeId" class="form-label">Employee</label>
+                <label for="employeeId" class="form-label" th:text="#{employee}"></label>
                 <select class="form-select" id="employeeId" name="employee.id" required>
-                    <option value="" disabled>Select an Employee</option>
+                    <option value="" disabled th:text="#{score.selectEmployee}"></option>
                     <option th:each="employee : ${employees}"
                             th:value="${employee.id}"
                             th:text="${employee.fullName}"
@@ -25,28 +25,28 @@
             </div>
 
             <div class="col-md-4">
-                <label for="type" class="form-label">Type</label>
+                <label for="type" class="form-label" th:text="#{score.type}"></label>
                 <select class="form-select" id="type" name="type" required>
-                    <option th:value="true" th:selected="${score.type}">Achievement</option>
-                    <option th:value="false" th:selected="!${score.type}">Discipline</option>
+                    <option th:value="true" th:selected="${score.type}" th:text="#{score.achieve}"></option>
+                    <option th:value="false" th:selected="!${score.type}" th:text="#{score.disciple}"></option>
                 </select>
             </div>
 
             <div class="col-md-4">
-                <label for="recordedDate" class="form-label">Recorded Date</label>
+                <label for="recordedDate" class="form-label"  th:text="#{score.recordDate}"></label>
                 <input type="date" class="form-control" id="recordedDate" name="recordedDate"
                        th:value="${#dates.format(score.recordedDate, 'yyyy-MM-dd')}" required>
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="reason" class="form-label">Reason</label>
+            <label for="reason" class="form-label"  th:text="#{score.reason}"></label>
             <textarea class="form-control" id="reason" name="reason" rows="3" required th:text="${score.reason}"></textarea>
         </div>
 
         <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-primary">Update Score</button>
-            <a th:href="@{/user/scores}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary"  th:text="#{action.update}"></button>
+            <a th:href="@{/user/scores}" class="btn btn-secondary"  th:text="#{action.cancel}"></a>
         </div>
     </form>
 </div>

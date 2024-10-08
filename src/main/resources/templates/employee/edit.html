@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>Edit Employee</title>
+  <title th:text="#{employee.edit}"></title>
   <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 
 <div class="container my-4 pb-5">
-  <h2>Edit Employee</h2>
+  <h2 th:text="#{employee.edit}"></h2>
 
   <form th:action="@{/admin/employees/edit/{id}(id=${employee.id})}" method="post" enctype="multipart/form-data">
     <div class="mb-3">
-      <label for="fullName" class="form-label">Full Name</label>
+      <label for="fullName" class="form-label" th:text="#{employee.fullname}"></label>
       <input type="text" class="form-control" id="fullName" name="fullName" th:value="${employee.fullName}" required>
     </div>
     <div class="mb-3">
-      <label for="gender" class="form-label">Gender</label>
+      <label for="gender" class="form-label" th:text="#{employee.gender"></label>
       <select class="form-select" id="gender" name="gender" required>
-        <option th:value="Male" th:selected="${employee.gender == 'Male'}">Male</option>
-        <option th:value="Female" th:selected="${employee.gender == 'Female'}">Female</option>
+        <option th:value="Male" th:selected="${employee.gender == 'Male'}" th:text="#{employee.gender.male"></option>
+        <option th:value="Female" th:selected="${employee.gender == 'Female'}" th:text="#{employee.gender.female"></option>
       </select>
     </div>
     <div class="mb-3">
-      <label for="image" class="form-label">Profile Image</label>
+      <label for="image" class="form-label" th:text="#{employee.image"></label>
       <input type="file" class="form-control" id="image" name="image">
       <div th:if="${employee.image}">
         <img th:src="@{${employee.image}}" alt="Employee Image" class="img-thumbnail mt-2" width="150">
       </div>
     </div>
     <div class="mb-3">
-      <label for="birthDate" class="form-label">Birth Date</label>
+      <label for="birthDate" class="form-label" th:text="#{employee.birthDay"></label>
       <input type="date" class="form-control" id="birthDate" name="birthDate" th:value="${#dates.format(employee.birthDate, 'yyyy-MM-dd')}" required>
     </div>
     <div class="mb-3">
-      <label for="salary" class="form-label">Salary</label>
+      <label for="salary" class="form-label" th:text="#{employee.salary"></label>
       <input type="number" class="form-control" id="salary" name="salary" th:value="${employee.salary}" required>
     </div>
     <div class="mb-3">
-      <label for="level" class="form-label">Level</label>
+      <label for="level" class="form-label" th:text="#{employee.level"></label>
       <input type="number" class="form-control" id="level" name="level" th:value="${employee.level}" min="1" max="10" required>
     </div>
     <div class="mb-3">
@@ -46,18 +46,17 @@
       <input type="email" class="form-control" id="email" name="email" th:value="${employee.email}" required>
     </div>
     <div class="mb-3">
-      <label for="phone" class="form-label">Phone</label>
+      <label for="phone" class="form-label" th:text="#{employee.phone">Phone</label>
       <input type="text" class="form-control" id="phone" name="phone" th:value="${employee.phone}" pattern="^09[0-9]{8}$" required>
     </div>
     <div class="mb-3">
-      <label for="notes" class="form-label">Notes</label>
+      <label for="notes" class="form-label" th:text="#{employee.notes"></label>
       <textarea class="form-control" id="notes" name="notes" rows="3" th:text="${employee.notes}"></textarea>
     </div>
     <div class="mb-3">
-      <label for="department" class="form-label">Department</label>
+      <label for="department" class="form-label" th:text="#{department.title"></label>
       <select class="form-select" id="department" name="departmentId">
-        <option value="" th:selected="${employee.department == null || employee.department.name == null}">
-          No Department Assigned
+        <option value="" th:selected="${employee.department == null || employee.department.name == null}" th:text="#{employee.noDepartment}">
         </option>
         <option th:each="department : ${departments}"
                 th:value="${department.id}"
@@ -67,8 +66,8 @@
       </select>
     </div>
 
-    <button type="submit" class="btn btn-primary">Update Employee</button>
-    <a href="#" class="btn btn-secondary" th:href="@{/user/employees}">Cancel</a>
+    <button type="submit" class="btn btn-primary" th:text="#{action.edit}"></button>
+    <a href="#" class="btn btn-secondary" th:href="@{/user/employees}" th:text="#{action.cancel}"></a>
   </form>
 </div>
 
