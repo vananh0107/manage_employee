@@ -23,10 +23,10 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public Score createScore(Score score) {
         if (score.getReason() == null || score.getReason().trim().isEmpty()) {
-            throw new ValidationException("Reason is required.");
+            throw new IllegalArgumentException("Reason is required.");
         }
         if (score.getRecordedDate() == null) {
-            throw new ValidationException("Recorded date is required.");
+            throw new IllegalArgumentException("Recorded date is required.");
         }
         return scoreRepository.save(score);
     }
