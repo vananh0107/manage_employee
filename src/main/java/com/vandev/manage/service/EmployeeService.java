@@ -20,4 +20,5 @@ public interface EmployeeService {
     List<Employee> getEmployeesByDepartment(Department department);
     List<Employee> getTop10Employees();
     List<Employee> getEmployeesWithoutUser();
+    Page<Employee> searchByFullName(String fullName, Pageable pageable);
 }

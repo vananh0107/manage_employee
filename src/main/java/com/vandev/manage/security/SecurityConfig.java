@@ -17,15 +17,11 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private final AuthenticationFailure authenticationFailure;
-    private final UserDetailsServiceImpl userDetailsService;
-
     @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService,AuthenticationFailure authenticationFailure) {
-        this.userDetailsService = userDetailsService;
-        this.authenticationFailure = authenticationFailure;
-    }
+    private  AuthenticationFailure authenticationFailure;
+    @Autowired
+    private  UserDetailsServiceImpl userDetailsService;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

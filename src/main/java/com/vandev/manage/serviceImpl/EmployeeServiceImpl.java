@@ -2,11 +2,8 @@ package com.vandev.manage.serviceImpl;
 
 import com.vandev.manage.pojo.Department;
 import com.vandev.manage.pojo.Employee;
-import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.service.EmployeeService;
-import com.vandev.manage.service.UserService;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -99,4 +96,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> getEmployeesWithoutUser(){
         return employeeRepository.findByUserIsNull();
     }
+    @Override
+    public Page<Employee> searchByFullName(String fullName, Pageable pageable) {
+        return employeeRepository.findByFullNameContainingIgnoreCase(fullName,pageable);
+    }
+
 }

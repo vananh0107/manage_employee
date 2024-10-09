@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title  th:text="{score.add}"></title>
+    <title  th:text="#{score.add}"></title>
     <head th:insert="~{fragments/fragment::html_head}"></head>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 <form th:action="@{/admin/scores/create}" method="post" class="container mt-5 pb-5">
     <div class="mb-3">
-        <label for="employeeId" class="form-label" th:text="{employee}"></label>
+        <label for="employeeId" class="form-label" th:text="#{employee}"></label>
         <select class="form-select" id="employeeId" name="employee.id" required>
             <option value="" disabled selected th:text="#{score.selectEmployee}"></option>
             <option th:each="employee : ${employees}"

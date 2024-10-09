@@ -2,11 +2,11 @@ package com.vandev.manage.serviceImpl;
 
 import com.vandev.manage.pojo.Department;
 import com.vandev.manage.repository.DepartmentRepository;
-import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,5 +60,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Page<Department> findPaginated(int page, int size) {
         return departmentRepository.findAll(PageRequest.of(page, size));
+    }
+    @Override
+    public Page<Department> searchByName(String name, Pageable pageable) {
+        return departmentRepository.findByNameContainingIgnoreCase(name,pageable);
     }
 }

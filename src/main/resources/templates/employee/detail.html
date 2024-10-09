@@ -54,21 +54,21 @@
                     <td th:if="${employee.department == null}" th:text="${employee.department.noDepartment}"></td>
                 </tr>
                 <tr>
-                    <th th:text="${total_achieve}"></th>
+                    <th th:text="#{total_achieve}"></th>
                     <td th:text="${totalAchievements}"></td>
                 </tr>
                 <tr>
-                    <th th:text="${total_discipline}"></th>
+                    <th th:text="#{total_discipline}"></th>
                     <td th:text="${totalDisciplines}"></td>
                 </tr>
                 <tr>
-                    <th th:text="${reward_score}"></th>
+                    <th th:text="#{reward_score}"></th>
                     <td th:text="${rewardScore}"></td>
                 </tr>
                 <tr>
-                    <th th:text="${score.detail}"></th>
+                    <th th:text="#{score.detail}"></th>
                     <td>
-                        <a th:href="@{/user/scores/employee/{id}(id=${employee.id})}" th:text="${action.view}">
+                        <a th:href="@{/user/scores/employee/{id}(id=${employee.id})}" th:text="#{action.view}">
                         </a>
                     </td>
                 </tr>
@@ -77,9 +77,9 @@
     </div>
     <br>
     <div class="d-flex justify-content-between mt-4">
-        <a th:href="@{/user/employees}" class="btn btn-secondary" th:text="${action.back}">
+        <a th:href="@{/user/employees}" class="btn btn-secondary" th:text="#{action.back}">
         </a>
-        <a th:href="@{/admin/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning" th:text="${action.edit}">
+        <a th:href="@{/admin/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning" th:text="#{action.edit}">
         </a>
     </div>
 </div>

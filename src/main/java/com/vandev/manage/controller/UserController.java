@@ -5,6 +5,8 @@ import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,24 +16,37 @@ import java.util.List;
 @RequestMapping("/admin/users")
 public class UserController {
 
-    private final UserServiceImpl userServiceImpl;
-    private final EmployeeServiceImpl employeeServiceImpl;
-
     @Autowired
-    public UserController(UserServiceImpl userServiceImpl, EmployeeServiceImpl employeeServiceImpl) {
-        this.employeeServiceImpl = employeeServiceImpl;
-        this.userServiceImpl = userServiceImpl;
-    }
+    private  UserServiceImpl userServiceImpl;
+    @Autowired
+    private  EmployeeServiceImpl employeeServiceImpl;
+
 
     @GetMapping()
-    public String showAccountManagement(Model model) {
-        List<UserSystem> users = userServiceImpl.findAllUsers();
+    public String showAccountManagement(Model model,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "8") int size)
+
+    {
+        Page<UserSystem> users = userServiceImpl.getPagedUsers(Pageable.ofSize(size).withPage(page));
         model.addAttribute("users", users);
         List<Employee> availableEmployees = employeeServiceImpl.getEmployeesWithoutUser();
+        String searchUrl="/admin/users/search";
+        model.addAttribute("searchUrl",searchUrl);
         model.addAttribute("availableEmployees", availableEmployees);
         return "user/index";
     }
-
+    @GetMapping("/search")
+    public String searchUsers(
+            @RequestParam("query") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Page<UserSystem> users = userServiceImpl.searchByUserName(query,Pageable.ofSize(size).withPage(page));
+        model.addAttribute("users", users);
+        model.addAttribute("query", query);
+        return "user/index";
+    }
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") Integer id) {
         userServiceImpl.deleteUserById(id);
@@ -58,9 +73,7 @@ public class UserController {
                              @RequestParam("active") Boolean active,
                              @RequestParam("employeeId") Integer employeeId) {
         UserSystem user = userServiceImpl.getUserById(id);
-
         userServiceImpl.updateUser(user, active, employeeId);
-
         return "redirect:/admin/users";
     }
 }

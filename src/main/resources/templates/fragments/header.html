@@ -1,6 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <header th:fragment="header">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -26,7 +25,7 @@
           <li class="nav-item">
             <a class="nav-link" href="/admin/users" th:text="#{navbar.users}"></a>
           </li>
-          <li>
+          <li class="nav-item">
             <div class="dropdown">
               <button class="dropbtn" th:text="#{navbar.language}"></button>
               <div class="dropdown-content">
@@ -34,6 +33,12 @@
                 <a class="dropdown-item" th:href="@{/change-language(lang='vi')}">Tiếng Việt</a>
               </div>
             </div>
+          </li>
+          <li class="nav-item ms-5">
+            <form class="d-flex" th:action="${searchUrl}" method="get">
+              <input id="searchInput" class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search" autocomplete="off">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
           </li>
         </ul>
         <div class="dropdown">

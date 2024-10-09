@@ -51,7 +51,28 @@ public class EmployeeController {
                 employee.setImage(fileName);
             }
         }
+        String searchUrl="/user/employees/search";
         model.addAttribute("employeePage", employeePage);
+        model.addAttribute("searchUrl",searchUrl);
+        return "employee/index";
+    }
+
+    @GetMapping("/user/employees/search")
+    public String searchEmployees(
+            @RequestParam("query") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Page<Employee> employeePage = employeeServiceImpl.searchByFullName(query,Pageable.ofSize(size).withPage(page));
+        for (Employee employee : employeePage.getContent()) {
+            String imagePath = employee.getImage();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                String fileName = "/"+imagePath;
+                employee.setImage(fileName);
+            }
+        }
+        model.addAttribute("employeePage", employeePage);
+        model.addAttribute("query", query);
         return "employee/index";
     }
 

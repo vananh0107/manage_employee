@@ -7,7 +7,8 @@
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 <div class="container mt-5">
-    <h2 th:text="#{user.manage}">></h2>
+    <h2 th:text="#{user.manage}"></h2>
+
     <table class="table table-bordered">
         <thead class="table-light">
         <tr>
@@ -20,36 +21,49 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user, iterStat : ${users}">
-            <td th:text="${iterStat.index + 1}"></td>
+        <tr th:each="user, iterStat : ${users.content}">
+            <td th:text="${iterStat.index + 1 + (users.number * users.size)}"></td>
             <td th:text="${user.username}"></td>
             <td th:text="${user.role}"></td>
             <td th:text="${user.employee != null ? user.employee.fullName : 'N/A'}"></td>
             <td>
-                <span th:if="${user.active}" class="badge bg-success" th:text="#{user.active}" ></span>
+                <span th:if="${user.active}" class="badge bg-success" th:text="#{user.active}"></span>
                 <span th:if="${!user.active}" class="badge bg-danger" th:text="#{user.inactive}"></span>
             </td>
             <td>
                 <a th:href="@{/admin/users/view/{id}(id=${user.id})}" class="btn btn-info btn-sm">
                     <span th:text="#{action.view}"></span>
                 </a>
-
                 <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" class="btn btn-warning btn-sm">
                     <span th:text="#{action.edit}"></span>
                 </a>
                 <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
                    class="btn btn-danger"
                    onclick="event.preventDefault();
-                             if(confirm('Are you sure you want to delete this department?')) {
+                             if(confirm('Are you sure you want to delete this user?')) {
                                  window.location.href=this.href;
                              }"
+                   >
                     <span th:text="#{action.delete}"></span>
-                >
                 </a>
             </td>
         </tr>
         </tbody>
     </table>
+
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${users.hasPrevious() ? '' : 'disabled'}">
+                <a class="page-link" th:href="@{/admin/users/search(page=${users.number - 1}, size=${users.size})}" th:text="#{pagination.previous}"></a>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link" th:text="${users.number + 1}"></span>
+            </li>
+            <li class="page-item" th:classappend="${users.hasNext() ? '' : 'disabled'}">
+                <a class="page-link" th:href="@{/admin/users/search(page=${users.number + 1}, size=${users.size})}" th:text="#{pagination.next}"></a>
+            </li>
+        </ul>
+    </nav>
 </div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>

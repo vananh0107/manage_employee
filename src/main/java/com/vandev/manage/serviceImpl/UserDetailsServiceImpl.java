@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         return User.withUsername(userSystem.getUsername())
                 .password(userSystem.getPassword())
-                .authorities(AuthorityUtils.createAuthorityList(userSystem.getRole())) // Role mặc định là "USER"
+                .authorities(AuthorityUtils.createAuthorityList(userSystem.getRole()))
                 .build();
     }
 }

@@ -12,18 +12,18 @@
   </div>
   <div class="modal-body">
     <div class="mb-3">
-      <label for="fullName" class="form-label" th:text="#{employee.fullname}">/label>
+      <label for="fullName" class="form-label" th:text="#{employee.fullname}"></label>
       <input type="text" name="fullName" class="form-control" id="fullName" required>
     </div>
     <div class="mb-3">
       <label for="gender" class="form-label" th:text="#{employee.gender}"></label>
       <select name="gender" class="form-control" id="gender" required>
-        <option value="Male" th:text="#{employee.male.male}"></option>
-        <option value="Female" th:text="#{employee.male.female}"></option>
+        <option value="Male" th:text="#{employee.gender.male}"></option>
+        <option value="Female" th:text="#{employee.gender.female}"></option>
       </select>
     </div>
     <div class="mb-3">
-      <label for="birthDate" class="form-label" th:text="#{employee.male.birthDay}"></label>
+      <label for="birthDate" class="form-label" th:text="#{employee.birthDay}"></label>
       <input type="date" name="birthDate" class="form-control" id="birthDate" required>
     </div>
     <div class="mb-3">

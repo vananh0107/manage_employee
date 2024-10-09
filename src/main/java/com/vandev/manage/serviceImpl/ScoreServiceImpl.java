@@ -70,4 +70,8 @@ public class ScoreServiceImpl implements ScoreService {
         Pageable fixedPageable = PageRequest.of(pageable.getPageNumber(), 8);
         return scoreRepository.findAll(fixedPageable);
     }
+    @Override
+    public Page<Score> searchScoreByEmployeeFullName(String fullName, Pageable pageable) {
+        return scoreRepository.findByEmployeeFullNameContainingIgnoreCase(fullName, pageable);
+    }
 }

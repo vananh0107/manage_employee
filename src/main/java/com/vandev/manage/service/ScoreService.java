@@ -13,4 +13,5 @@ public interface ScoreService {
     Score getScoreById(Integer pointId);
     List<Score> getScoreByEmployeeId(Integer employeeId);
     Page<Score> getPagedScores(Pageable pageable);
+    Page<Score> searchScoreByEmployeeFullName(String fullName,Pageable pageable);
 }

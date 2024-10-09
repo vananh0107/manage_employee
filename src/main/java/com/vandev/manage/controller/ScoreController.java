@@ -35,8 +35,21 @@ public class ScoreController {
                             @RequestParam(defaultValue = "8") int size){
         Page<Score> scorePage = scoreServiceImpl.getPagedScores(Pageable.ofSize(size).withPage(page));
         List<Employee> employees = employeeServiceImpl.getAllEmployees();
+        String searchUrl="/user/scores/search";
+        model.addAttribute("searchUrl",searchUrl);
         model.addAttribute("employees", employees);
         model.addAttribute("scorePage", scorePage);
+        return "score/index";
+    }
+    @GetMapping("/user/scores/search")
+    public String searchScores(
+            @RequestParam("query") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Page<Score> scorePage = scoreServiceImpl.searchScoreByEmployeeFullName(query,Pageable.ofSize(size).withPage(page));
+        model.addAttribute("scorePage", scorePage);
+        model.addAttribute("query", query);
         return "score/index";
     }
     @PostMapping("/admin/scores/create")

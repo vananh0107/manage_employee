@@ -45,3 +45,9 @@ footer {
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+.register{
+    padding: 50px 400px;
+}
+.register form{
+    margin-top: 40px;
+}

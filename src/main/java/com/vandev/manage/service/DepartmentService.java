@@ -2,6 +2,7 @@ package com.vandev.manage.service;
 
 import com.vandev.manage.pojo.Department;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface DepartmentService {
     Department getDepartmentById(Integer departmentId);
     List<Department> getAllDepartments();
     Page<Department> findPaginated(int page, int size);
+    Page<Department> searchByName(String name, Pageable pageable);
 }

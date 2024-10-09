@@ -8,6 +8,7 @@ import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.ScoreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,22 @@ public class DepartmentController {
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size) {
         Page<Department> departmentPage = departmentServiceImpl.findPaginated(page, size);
+        String searchUrl="/user/departments/search";
+        model.addAttribute("searchUrl",searchUrl);
         model.addAttribute("departmentPage", departmentPage);
         model.addAttribute("employeeServiceImpl", employeeServiceImpl);
+        return "department/index";
+    }
+    @GetMapping("/user/departments/search")
+    public String searchEmployees(
+            @RequestParam("query") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Page<Department> departmentPage = departmentServiceImpl.searchByName(query, Pageable.ofSize(size).withPage(page));
+        model.addAttribute("departmentPage", departmentPage);
+        model.addAttribute("employeeServiceImpl", employeeServiceImpl);
+        model.addAttribute("query", query);
         return "department/index";
     }
     @PostMapping("/admin/departments/create")
@@ -47,9 +62,7 @@ public class DepartmentController {
             employees.forEach(employee -> employee.setDepartment(department));
             employeeServiceImpl.saveAll(employees);
         }
-
         redirectAttributes.addFlashAttribute("successMessage", "Department created successfully!");
-
         return "redirect:/user/departments";
     }
     @GetMapping("/user/departments/view/{id}")
@@ -59,7 +72,6 @@ public class DepartmentController {
         int totalAchievements = 0;
         int totalDisciplines = 0;
         int rewardScore = 0;
-
         for (Employee employee : employees) {
             List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(employee.getId());
             totalAchievements += (int) scores.stream().filter(score -> score.isType()).count();

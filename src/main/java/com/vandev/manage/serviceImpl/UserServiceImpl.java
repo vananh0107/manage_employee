@@ -6,13 +6,14 @@ import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.repository.UserRepository;
 import com.vandev.manage.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,8 +46,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username).isPresent();
     }
     @Override
-    public List<UserSystem> findAllUsers() {
-        return userRepository.findAll();
+    public Page<UserSystem> getPagedUsers(Pageable pageable) {
+        Pageable fixedPageable = PageRequest.of(pageable.getPageNumber(), 8);
+        return userRepository.findAll(fixedPageable);
     }
 
     @Override
@@ -62,13 +64,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(UserSystem user, Boolean active, Integer employeeId) {
         user.setActive(active);
-
         if (employeeId != null) {
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid Employee ID: " + employeeId));
             user.setEmployee(employee);
         }
-
         userRepository.save(user);
+    }
+    @Override
+    public Page<UserSystem> searchByUserName(String username, Pageable pageable) {
+        return userRepository.findByUsernameContainingIgnoreCase(username,pageable);
     }
 }
