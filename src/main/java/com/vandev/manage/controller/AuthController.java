@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthController {
     @GetMapping("/access-denied")
     public String accessDenied() {
-        return "access-denied";
+        return "error/access-denied";
     }
     @GetMapping("/login")
     public String login(Model model) {
@@ -18,6 +18,6 @@ public class AuthController {
     }
     @GetMapping("/non-active")
     public String showNonActivePage(Model model) {
-        return "non-active";
+        return "error/non-active";
     }
 }

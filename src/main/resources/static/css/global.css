@@ -51,3 +51,9 @@ footer {
 .register form{
     margin-top: 40px;
 }
+.error{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

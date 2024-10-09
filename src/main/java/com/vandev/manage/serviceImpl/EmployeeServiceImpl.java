@@ -4,6 +4,7 @@ import com.vandev.manage.pojo.Department;
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.repository.EmployeeRepository;
 import com.vandev.manage.service.EmployeeService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,23 +27,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee updateEmployee(Integer employeeId, Employee employee) {
-        Optional<Employee> existingEmployee = employeeRepository.findById(employeeId);
-        if (existingEmployee.isPresent()) {
-            Employee updatedEmployee = existingEmployee.get();
-            updatedEmployee.setFullName(employee.getFullName());
-            updatedEmployee.setGender(employee.getGender());
-            updatedEmployee.setImage(employee.getImage());
-            updatedEmployee.setBirthDate(employee.getBirthDate());
-            updatedEmployee.setSalary(employee.getSalary());
-            updatedEmployee.setLevel(employee.getLevel());
-            updatedEmployee.setEmail(employee.getEmail());
-            updatedEmployee.setPhone(employee.getPhone());
-            updatedEmployee.setNotes(employee.getNotes());
-            updatedEmployee.setDepartment(employee.getDepartment());
-            return employeeRepository.save(updatedEmployee);
-        } else {
-            throw new IllegalArgumentException("Employee not found.");
-        }
+        return employeeRepository.findById(employeeId)
+                .map(existingEmployee -> {
+                    BeanUtils.copyProperties(employee, existingEmployee, "id", "user", "scores");
+                    return employeeRepository.save(existingEmployee);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found."));
     }
 
     @Override
