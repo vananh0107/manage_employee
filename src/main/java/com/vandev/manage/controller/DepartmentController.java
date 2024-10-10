@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -54,16 +53,19 @@ public class DepartmentController {
     @PostMapping("/admin/departments/create")
     public String createDepartment(@ModelAttribute Department department,
                                    @RequestParam(value = "employeeIds", required = false) List<Integer> employeeIds,
-                                   RedirectAttributes redirectAttributes) {
-        departmentServiceImpl.createDepartment(department);
-
-        if (employeeIds != null && !employeeIds.isEmpty()) {
-            List<Employee> employees = employeeServiceImpl.findAllById(employeeIds);
-            employees.forEach(employee -> employee.setDepartment(department));
-            employeeServiceImpl.saveAll(employees);
+                                   Model model) {
+        try {
+            departmentServiceImpl.createDepartment(department);
+            if (employeeIds != null && !employeeIds.isEmpty()) {
+                List<Employee> employees = employeeServiceImpl.findAllById(employeeIds);
+                employees.forEach(employee -> employee.setDepartment(department));
+                employeeServiceImpl.saveAll(employees);
+            }
+            return "redirect:/user/departments";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "department/create";
         }
-        redirectAttributes.addFlashAttribute("successMessage", "Department created successfully!");
-        return "redirect:/user/departments";
     }
     @GetMapping("/user/departments/view/{id}")
     public String viewDepartment(@PathVariable("id") Integer id, Model model) {
@@ -110,8 +112,8 @@ public class DepartmentController {
     public String updateDepartment(@PathVariable("id") Integer id,
                                    @ModelAttribute Department department,
                                    @RequestParam(value = "currentEmployeeIds", required = false) List<Integer> currentEmployeeIds,
-                                   @RequestParam(value = "newEmployeeIds", required = false) List<Integer> newEmployeeIds,
-                                   RedirectAttributes redirectAttributes) {
+                                   @RequestParam(value = "newEmployeeIds", required = false) List<Integer> newEmployeeIds
+                                   ) {
         Department existingDepartment = departmentServiceImpl.getDepartmentById(id);
         existingDepartment.setName(department.getName());
         departmentServiceImpl.updateDepartment(id,existingDepartment);
@@ -129,11 +131,10 @@ public class DepartmentController {
             employeeServiceImpl.saveAll(newEmployees);
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Department updated successfully!");
         return "redirect:/user/departments";
     }
     @GetMapping("/admin/departments/delete/{id}")
-    public String deleteDepartment(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    public String deleteDepartment(@PathVariable("id") Integer id) {
         Department department = departmentServiceImpl.getDepartmentById(id);
         if (department != null) {
             List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);

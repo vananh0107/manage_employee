@@ -16,6 +16,6 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
             "JOIN e.scores s " +
             "GROUP BY e.id " +
             "ORDER BY (COUNT(CASE WHEN s.type = true THEN 1 END) - COUNT(CASE WHEN s.type = false THEN 1 END)) DESC")
-    List<Employee> findTop10EmployeesByRewardPoints(Pageable pageable);
+    List<Employee> findTopEmployeesByRewardPoints(Pageable pageable);
     @Query("SELECT s FROM Score s JOIN s.employee e WHERE LOWER(e.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))")
     Page<Score> findByEmployeeFullNameContainingIgnoreCase(@Param("fullName") String fullName, Pageable pageable);}

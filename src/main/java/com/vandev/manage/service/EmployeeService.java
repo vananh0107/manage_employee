@@ -18,7 +18,7 @@ public interface EmployeeService {
     List<Employee> findAllById(List<Integer> ids);
     void saveAll(List<Employee> employees);
     List<Employee> getEmployeesByDepartment(Department department);
-    List<Employee> getTop10Employees();
+    List<Employee> getTopEmployees();
     List<Employee> getEmployeesWithoutUser();
     Page<Employee> searchByFullName(String fullName, Pageable pageable);
 }

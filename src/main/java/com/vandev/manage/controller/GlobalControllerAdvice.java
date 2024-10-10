@@ -33,8 +33,4 @@ public class GlobalControllerAdvice {
             model.addAttribute("username", username);
         }
     }
-    @ExceptionHandler(Exception.class)
-    public ModelAndView handleGeneralException(Exception ex, Model model) {
-        return new ModelAndView("error/not-found", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 }

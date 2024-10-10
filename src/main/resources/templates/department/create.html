@@ -11,6 +11,7 @@
     <div class="modal-header">
         <h5 class="modal-title" id="departmentModalLabel" th:text="#{department.add}"></h5>
     </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
     <div class="modal-body">
         <div class="mb-3">
             <label for="departmentName" class="form-label" th:text="#{department.table.name}"></label>

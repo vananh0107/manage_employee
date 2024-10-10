@@ -5,6 +5,7 @@ import com.vandev.manage.pojo.Department;
 import com.vandev.manage.pojo.Score;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
+import com.vandev.manage.serviceImpl.ImageServiceImpl;
 import com.vandev.manage.serviceImpl.ScoreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,8 @@ public class EmployeeController {
     @Autowired
     private ScoreServiceImpl scoreServiceImpl;
 
+    @Autowired
+    private ImageServiceImpl imageServiceImpl;
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields("image");
@@ -88,8 +91,11 @@ public class EmployeeController {
                                  @RequestParam("image") MultipartFile imageFile,
                                  @RequestParam("departmentId") String departmentId,
                                  RedirectAttributes redirectAttributes) {
-        try {
-            String imagePath = saveImageWithTimestamp(imageFile);
+            String imagePath = imageServiceImpl.saveImageWithTimestamp(imageFile);
+            if(imagePath.equals("Failed to upload image")) {
+                redirectAttributes.addFlashAttribute("message", "Failed to upload image");
+                return "redirect:/user/employees";
+            }
             employee.setImage(imagePath);
             if (departmentId == null || departmentId.isEmpty()) {
                 employee.setDepartment(null);
@@ -99,19 +105,6 @@ public class EmployeeController {
             }
             employeeServiceImpl.createEmployee(employee);
             return "redirect:/user/employees";
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("message", "Failed to upload image");
-            return "redirect:/user/employees";
-        }
-    }
-
-    private String saveImageWithTimestamp(MultipartFile imageFile) throws IOException {
-        String extension = imageFile.getOriginalFilename().substring(imageFile.getOriginalFilename().lastIndexOf("."));
-        String customFileName = System.currentTimeMillis() + extension;
-        String uploadDir = "C:/Users/anhbv/code/manage_employee/src/main/resources/upload_images/images/";
-        Path filePath = Paths.get(uploadDir + customFileName);
-        Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        return "images/"+customFileName;
     }
 
     @GetMapping("/user/employees/view/{id}")
@@ -146,20 +139,12 @@ public class EmployeeController {
                                  @RequestParam("departmentId") String departmentId,
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
-        try {
             Employee existingEmployee = employeeServiceImpl.getEmployeeById(id);
-            if (!imageFile.isEmpty()) {
-                if (existingEmployee.getImage() != null && !existingEmployee.getImage().isEmpty()) {
-                    Path oldImagePath = Paths.get(existingEmployee.getImage());
-                    if (oldImagePath != null) {
-                        Path fullOldImagePath = Paths.get("C:/Users/anhbv/code/manage_employee/src/main/resources/upload_images/" + oldImagePath);
-                        Files.deleteIfExists(fullOldImagePath);
-                    }
-                }
-                String newImagePath = saveImageWithTimestamp(imageFile);
-                employee.setImage(newImagePath);
-            } else {
-                employee.setImage(existingEmployee.getImage());
+            String newImagePath = imageServiceImpl.updateImage(existingEmployee.getImage(),imageFile);
+            employee.setImage(newImagePath);
+            if(newImagePath.equals("Failed to update image")){
+                redirectAttributes.addFlashAttribute("errorMessage", "Failed to update employee or handle image file.");
+                return "redirect:/user/employees";
             }
             if (departmentId == null || departmentId.isEmpty()) {
                 employee.setDepartment(null);
@@ -169,10 +154,6 @@ public class EmployeeController {
             }
             employeeServiceImpl.updateEmployee(id, employee);
             return "redirect:/user/employees";
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update employee or handle image file.");
-            return "redirect:/user/employees";
-        }
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/employees/delete/{id}")

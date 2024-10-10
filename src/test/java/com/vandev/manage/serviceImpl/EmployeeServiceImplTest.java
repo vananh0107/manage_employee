@@ -41,7 +41,34 @@ public class EmployeeServiceImplTest {
         assertNotNull(result);
         verify(employeeRepository, times(1)).save(employee);
     }
+    @Test
+    void fillAllById_Success() {
+        List<Integer> ids = Arrays.asList(1, 2, 3);
+        Employee employee1 = new Employee();
+        employee1.setId(1);
+        Employee employee2 = new Employee();
+        employee2.setId(2);
+        Employee employee3 = new Employee();
+        employee3.setId(3);
 
+        when(employeeRepository.findAllById(ids)).thenReturn(Arrays.asList(employee1, employee2, employee3));
+
+        List<Employee> result = employeeServiceImpl.findAllById(ids);
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        assertEquals(employee1, result.get(0));
+        assertEquals(employee2, result.get(1));
+        assertEquals(employee3, result.get(2));
+        verify(employeeRepository, times(1)).findAllById(ids);
+    }
+    @Test
+    void saveAll_Success(){
+        List<Employee> employees = Arrays.asList(new Employee(), new Employee());
+
+        employeeServiceImpl.saveAll(employees);
+        verify(employeeRepository, times(1)).saveAll(employees);
+    }
     @Test
     void updateEmployee_EmployeeExists_Success() {
         Employee existingEmployee = new Employee();
@@ -170,12 +197,12 @@ public class EmployeeServiceImplTest {
     @Test
     void getTop10Employees_Success() {
         List<Employee> employees = Arrays.asList(new Employee(), new Employee());
-        when(employeeRepository.findTop10EmployeesByRewardPoints(any(Pageable.class))).thenReturn(employees);
+        when(employeeRepository.findTopEmployeesByRewardPoints(any(Pageable.class))).thenReturn(employees);
 
-        List<Employee> result = employeeServiceImpl.getTop10Employees();
+        List<Employee> result = employeeServiceImpl.getTopEmployees();
 
         assertEquals(2, result.size());
-        verify(employeeRepository, times(1)).findTop10EmployeesByRewardPoints(any(Pageable.class));
+        verify(employeeRepository, times(1)).findTopEmployeesByRewardPoints(any(Pageable.class));
     }
 
     @Test

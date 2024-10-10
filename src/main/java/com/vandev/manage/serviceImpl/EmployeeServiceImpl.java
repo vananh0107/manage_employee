@@ -78,9 +78,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findByDepartment(department);
     }
     @Override
-    public List<Employee> getTop10Employees() {
+    public List<Employee> getTopEmployees() {
         Pageable top10 = PageRequest.of(0, 10);
-        return employeeRepository.findTop10EmployeesByRewardPoints(top10);
+        return employeeRepository.findTopEmployeesByRewardPoints(top10);
     }
     @Override
     public List<Employee> getEmployeesWithoutUser(){

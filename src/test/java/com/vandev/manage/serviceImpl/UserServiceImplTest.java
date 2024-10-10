@@ -1,5 +1,7 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.dto.UserSystemDTO;
+import com.vandev.manage.mapper.UserMapper;
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.pojo.UserSystem;
 import com.vandev.manage.repository.EmployeeRepository;
@@ -14,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +30,8 @@ public class UserServiceImplTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
@@ -63,31 +65,6 @@ public class UserServiceImplTest {
 
         assertFalse(result.isPresent());
         verify(userRepository, times(1)).findByUsername(username);
-    }
-
-    @Test
-    void getCurrentUser_UserExists_Success() {
-        UserSystem user = new UserSystem();
-        String username = "vanh";
-
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn(username);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-
-        UserSystem result = userServiceImpl.getCurrentUser();
-
-        assertNotNull(result);
-        assertEquals(user, result);
-    }
-
-    @Test
-    void getCurrentUser_NoAuthentication_ReturnsNull() {
-        SecurityContextHolder.clearContext();
-
-        UserSystem result = userServiceImpl.getCurrentUser();
-
-        assertNull(result);
     }
 
     @Test
@@ -130,7 +107,7 @@ public class UserServiceImplTest {
 
         when(userRepository.findAll(pageable)).thenReturn(page);
 
-        Page<UserSystem> result = userServiceImpl.getPagedUsers(pageable);
+        Page<UserSystemDTO> result = userServiceImpl.getPagedUsers(pageable);
 
         assertEquals(2, result.getTotalElements());
         verify(userRepository, times(1)).findAll(pageable);
@@ -151,12 +128,13 @@ public class UserServiceImplTest {
         Integer userId = 1;
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userMapper.toDTO(user)).thenReturn(new UserSystemDTO());
 
-        UserSystem result = userServiceImpl.getUserById(userId);
+        UserSystemDTO result = userServiceImpl.getUserById(userId);
 
         assertNotNull(result);
-        assertEquals(user, result);
         verify(userRepository, times(1)).findById(userId);
+        verify(userMapper, times(1)).toDTO(user);
     }
 
     @Test
@@ -176,14 +154,16 @@ public class UserServiceImplTest {
     @Test
     void updateUser_Success() {
         UserSystem user = new UserSystem();
+        user.setActive(false);
         Integer employeeId = 1;
         Employee employee = new Employee();
 
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
 
-        userServiceImpl.updateUser(user, true, employeeId);
+        userServiceImpl.updateUser(1, true, employeeId);
 
-        assertTrue(user.isActive());
+        assertTrue(user.getActive());
         assertEquals(employee, user.getEmployee());
         verify(userRepository, times(1)).save(user);
     }
@@ -193,14 +173,30 @@ public class UserServiceImplTest {
         UserSystem user = new UserSystem();
         Integer employeeId = 1;
 
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            userServiceImpl.updateUser(user, true, employeeId);
+            userServiceImpl.updateUser(1, true, employeeId);
         });
 
         assertEquals("Invalid Employee ID: " + employeeId, exception.getMessage());
         verify(userRepository, never()).save(any(UserSystem.class));
+    }
+
+    @Test
+    void updateUser_EmployeeIdIsNull_Success() {
+        UserSystem user = new UserSystem();
+        user.setActive(false);
+        Integer employeeId = null;
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
+        userServiceImpl.updateUser(1, true, employeeId);
+
+        assertTrue(user.getActive());
+        assertNull(user.getEmployee());
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -209,8 +205,9 @@ public class UserServiceImplTest {
         Page<UserSystem> page = new PageImpl<>(List.of(new UserSystem(), new UserSystem()));
 
         when(userRepository.findByUsernameContainingIgnoreCase("vanh", pageable)).thenReturn(page);
+        when(userMapper.toDTO(any(UserSystem.class))).thenReturn(new UserSystemDTO());
 
-        Page<UserSystem> result = userServiceImpl.searchByUserName("vanh", pageable);
+        Page<UserSystemDTO> result = userServiceImpl.searchByUserName("vanh", pageable);
 
         assertEquals(2, result.getTotalElements());
         verify(userRepository, times(1)).findByUsernameContainingIgnoreCase("vanh", pageable);

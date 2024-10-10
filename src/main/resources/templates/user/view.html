@@ -22,22 +22,12 @@
 
     <div class="mb-3">
       <label for="active" class="form-label" th:text="#{user.activeStatus}"></label>
-      <select class="form-select" id="active" name="active">
-        <option th:value="true" th:selected="${user.active}" th:text="#{user.active}"></option>
-        <option th:value="false" th:selected="${!user.active}" th:text="#{user.inactive}"></option>
-      </select>
+      <input type="text" class="form-control" id="active" th:value="${user.active}" readonly>
     </div>
 
     <div class="mb-3">
       <label for="employee" class="form-label" th:text="#{user.assign}"></label>
-      <select class="form-select" id="employee" name="employeeId">
-        <option value="">None</option>
-        <option th:each="employee : ${employees}"
-                th:value="${employee.id}"
-                th:text="${employee.fullName}"
-                th:selected="${employee.id == user.employee?.id}">
-        </option>
-      </select>
+      <input type="text" class="form-control" id="employee" th:value="${user.employee?.fullName}" readonly>
     </div>
     <a href="/admin/users" class="btn btn-secondary" th:text="#{action.back}"></a>
   </form>

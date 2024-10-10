@@ -20,7 +20,7 @@ public class HomeController {
     private EmployeeServiceImpl employeeServiceImpl;
     @GetMapping("/user")
     public String showTopEmployees(HttpServletRequest request, Model model) {
-        List<Employee> topEmployees = employeeServiceImpl.getTop10Employees();
+        List<Employee> topEmployees = employeeServiceImpl.getTopEmployees();
         String searchUrl="/user/employees/search";
         model.addAttribute("searchUrl",searchUrl);
         model.addAttribute("requestURI", request.getRequestURI());

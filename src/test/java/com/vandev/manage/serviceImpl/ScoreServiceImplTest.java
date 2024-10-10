@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,9 @@ public class ScoreServiceImplTest {
     @Test
     void createScore_Success() {
         Score score = new Score();
+        Date recordedDate = java.sql.Date.valueOf(LocalDate.now());
+        score.setRecordedDate(recordedDate);
+        score.setReason("work late");
         when(scoreRepository.save(score)).thenReturn(score);
 
         Score result = scoreServiceImpl.createScore(score);
@@ -48,7 +52,8 @@ public class ScoreServiceImplTest {
     @Test
     void createScore_MissingReason_ThrowsValidationException() {
         Score score = new Score();
-        score.setRecordedDate(LocalDate.now());
+        Date recordedDate = java.sql.Date.valueOf(LocalDate.now());
+        score.setRecordedDate(recordedDate);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             scoreServiceImpl.createScore(score);
         });
@@ -62,7 +67,7 @@ public class ScoreServiceImplTest {
         Score score = new Score();
         score.setReason("Work late");
 
-        Exception exception = assertThrows(ValidationException.class, () -> {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             scoreServiceImpl.createScore(score);
         });
 
