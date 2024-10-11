@@ -3,7 +3,6 @@ package com.vandev.manage.serviceImpl;
 import com.vandev.manage.pojo.Score;
 import com.vandev.manage.repository.ScoreRepository;
 import com.vandev.manage.service.ScoreService;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
