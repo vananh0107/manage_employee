@@ -44,7 +44,8 @@
         <div class="dropdown">
           <button class="dropbtn" th:text="${username}"></button>
           <div class="dropdown-content">
-            <a th:href="@{/user/employees/view/{id}(id=${employeeId})}" th:text="#{navbar.info}"></a>
+            <a th:if="${employeeId != null}" th:href="@{/user/employees/view/{id}(id=${employeeId})}" th:text="#{navbar.info}"></a>
+            <a th:if="${employeeNotAssigned}" th:href="@{/account-not-assign}" th:text="#{navbar.info}"></a>
             <form th:action="@{/logout}" method="post">
               <button type="submit" class="dropdown-item" th:text="#{navbar.logout}"></button>
             </form>

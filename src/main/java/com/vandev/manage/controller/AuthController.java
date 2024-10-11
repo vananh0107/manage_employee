@@ -23,6 +23,10 @@ public class AuthController {
     public String showNonActivePage(Model model) {
         return "error/non-active";
     }
+    @GetMapping("/account-not-assign")
+    public String showAccountNotFound(Model model) {
+        return "error/account-not-assign";
+    }
     @ExceptionHandler(Exception.class)
     public ModelAndView handleGeneralException(Exception ex, Model model) {
         return new ModelAndView("error/not-found", HttpStatus.INTERNAL_SERVER_ERROR);

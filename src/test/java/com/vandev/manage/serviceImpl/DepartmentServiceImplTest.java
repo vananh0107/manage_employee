@@ -73,25 +73,24 @@ public class DepartmentServiceImplTest {
         Department updatedDepartment = new Department();
         updatedDepartment.setName("Updated HR");
 
-        when(departmentRepository.findByName("Updated HR")).thenReturn(Optional.empty());
         when(departmentRepository.findById(1)).thenReturn(Optional.of(existingDepartment));
+
         when(departmentRepository.save(any(Department.class))).thenReturn(existingDepartment);
 
         Department result = departmentServiceImpl.updateDepartment(1, updatedDepartment);
         assertNotNull(result);
         assertEquals("Updated HR", result.getName());
 
-        verify(departmentRepository, times(1)).findByName("Updated HR");
         verify(departmentRepository, times(1)).findById(1);
         verify(departmentRepository, times(1)).save(existingDepartment);
     }
+
 
     @Test
     void updateDepartment_DepartmentDoesNotExist_ThrowsException() {
         Department updatedDepartment = new Department();
         updatedDepartment.setName("Updated HR");
 
-        when(departmentRepository.findByName("Updated HR")).thenReturn(Optional.empty());
         when(departmentRepository.findById(1)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -100,32 +99,11 @@ public class DepartmentServiceImplTest {
 
         assertEquals("Department not found.", exception.getMessage());
 
-        verify(departmentRepository, times(1)).findByName("Updated HR");
         verify(departmentRepository, times(1)).findById(1);
         verify(departmentRepository, never()).save(any(Department.class));
     }
 
-    @Test
-    void updateDepartment_DepartmentNameAlreadyExists_ThrowsException() {
-        Department existingDepartment = new Department();
-        existingDepartment.setId(2);
-        existingDepartment.setName("Existing HR");
 
-        Department updatedDepartment = new Department();
-        updatedDepartment.setName("Existing HR");
-
-        when(departmentRepository.findByName("Existing HR")).thenReturn(Optional.of(existingDepartment));
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            departmentServiceImpl.updateDepartment(1, updatedDepartment);
-        });
-
-        assertEquals("Department name already exists.", exception.getMessage());
-
-        verify(departmentRepository, times(1)).findByName("Existing HR");
-        verify(departmentRepository, never()).findById(anyInt());
-        verify(departmentRepository, never()).save(any(Department.class));
-    }
     @Test
     void deleteDepartment_DepartmentExists_Success() {
         when(departmentRepository.existsById(1)).thenReturn(true);

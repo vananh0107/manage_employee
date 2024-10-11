@@ -28,9 +28,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department updateDepartment(Integer departmentId, Department department) {
-        if (departmentRepository.findByName(department.getName()).isPresent()) {
-            throw new IllegalArgumentException("Department name already exists.");
-        }
         Optional<Department> existingDepartment = departmentRepository.findById(departmentId);
         if (existingDepartment.isPresent()) {
             Department updatedDepartment = existingDepartment.get();

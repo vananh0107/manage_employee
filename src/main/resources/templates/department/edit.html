@@ -32,7 +32,7 @@
       <div class="form-check">
         <input class="form-check-input" type="checkbox" th:id="'employeeNew' + ${employee.id}" th:value="${employee.id}" name="newEmployeeIds" />
         <label class="form-check-label" th:for="'employeeNew' + ${employee.id}">
-          ID: <span th:text="${employee.id}"></span>,<span th:text="#{employee.name}"><span th:text="${employee.fullName}"></span> </span>
+          ID: <span th:text="${employee.id}"></span>,<span th:text="#{employee.name}"></span>: <span th:text="${employee.fullName}"></span>
         </label>
       </div>
     </div>
