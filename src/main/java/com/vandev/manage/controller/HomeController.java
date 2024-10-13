@@ -1,5 +1,6 @@
 package com.vandev.manage.controller;
 
+import com.vandev.manage.dto.EmployeeDTO;
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,9 @@ public class HomeController {
     private EmployeeServiceImpl employeeServiceImpl;
     @GetMapping("/user")
     public String showTopEmployees(HttpServletRequest request, Model model) {
-        List<Employee> topEmployees = employeeServiceImpl.getTopEmployees();
-        String searchUrl="/user/employees/search";
-        model.addAttribute("searchUrl",searchUrl);
+        List<EmployeeDTO> topEmployees = employeeServiceImpl.getTopEmployees();
+        String searchUrl = "/user/employees/search";
+        model.addAttribute("searchUrl", searchUrl);
         model.addAttribute("requestURI", request.getRequestURI());
         model.addAttribute("employees", topEmployees);
         return "home";

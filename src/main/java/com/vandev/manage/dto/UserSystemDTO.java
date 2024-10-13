@@ -7,7 +7,7 @@ import lombok.Data;
 public class UserSystemDTO {
     private Integer id;
     private String username;
-    private Employee employee;
+    private Integer employeeId;
     private String role;
     private Boolean active=false;
 }

@@ -1,72 +1,98 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.dto.ScoreDTO;
 import com.vandev.manage.pojo.Score;
 import com.vandev.manage.repository.ScoreRepository;
 import com.vandev.manage.service.ScoreService;
-import org.springframework.beans.BeanUtils;
+import com.vandev.manage.mapper.ScoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
-
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ScoreServiceImpl implements ScoreService {
 
     @Autowired
-    private  ScoreRepository scoreRepository;
+    private ScoreRepository scoreRepository;
+
+    @Autowired
+    private ScoreMapper scoreMapper;
 
     @Override
-    public Score createScore(Score score) {
-        if (score.getReason() == null || score.getReason().trim().isEmpty()) {
+    public ScoreDTO createScore(ScoreDTO scoreDTO) {
+        if (scoreDTO.getReason() == null || scoreDTO.getReason().trim().isEmpty()) {
             throw new IllegalArgumentException("Reason is required.");
         }
-        if (score.getRecordedDate() == null) {
+        if (scoreDTO.getRecordedDate() == null) {
             throw new IllegalArgumentException("Recorded date is required.");
         }
-        return scoreRepository.save(score);
+
+        Score score = scoreMapper.toEntity(scoreDTO);
+        Score savedScore = scoreRepository.save(score);
+        return scoreMapper.toDTO(savedScore);
     }
 
     @Override
-    public Score updateScore(Integer scoreId, Score score) {
+    public ScoreDTO updateScore(Integer scoreId, ScoreDTO scoreDTO) {
         return scoreRepository.findById(scoreId)
                 .map(existingScore -> {
-                    BeanUtils.copyProperties(score, existingScore, "id", "employee");
-                    return scoreRepository.save(existingScore);
+                    BeanUtils.copyProperties(scoreDTO, existingScore, "id", "employee");
+                    Score updatedScore = scoreRepository.save(existingScore);
+                    return scoreMapper.toDTO(updatedScore);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Score record not found."));
     }
 
     @Override
-    public void deleteScore(Integer pointId) {
-        if (!scoreRepository.existsById(pointId)) {
-            throw new IllegalArgumentException("Point record not found.");
+    public void deleteScore(Integer scoreId) {
+        if (!scoreRepository.existsById(scoreId)) {
+            throw new IllegalArgumentException("Score record not found.");
         }
-        scoreRepository.deleteById(pointId);
+        scoreRepository.deleteById(scoreId);
     }
 
     @Override
-    public Score getScoreById(Integer pointId) {
-        return scoreRepository.findById(pointId)
-                .orElseThrow(() -> new IllegalArgumentException("Point record not found."));
-    }
-
-
-    @Override
-    public List<Score> getScoreByEmployeeId(Integer employeeId) {
-        return scoreRepository.findByEmployee_Id(employeeId);
+    public ScoreDTO getScoreById(Integer scoreId) {
+        return scoreRepository.findById(scoreId)
+                .map(scoreMapper::toDTO)
+                .orElseThrow(() -> new IllegalArgumentException("Score record not found."));
     }
 
     @Override
-    public Page<Score> getPagedScores(Pageable pageable) {
+    public List<ScoreDTO> getScoreByEmployeeId(Integer employeeId) {
+        List<Score> scores = scoreRepository.findByEmployee_Id(employeeId);
+        return scores.stream().map(scoreMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ScoreDTO> getPagedScores(Pageable pageable) {
         Pageable fixedPageable = PageRequest.of(pageable.getPageNumber(), 8);
-        return scoreRepository.findAll(fixedPageable);
+        Page<Score> scorePage = scoreRepository.findAll(fixedPageable);
+        return scorePage.map(scoreMapper::toDTO);
     }
+
     @Override
-    public Page<Score> searchScoreByEmployeeFullName(String fullName, Pageable pageable) {
-        return scoreRepository.findByEmployeeFullNameContainingIgnoreCase(fullName, pageable);
+    public Page<ScoreDTO> searchScoreByEmployeeFullName(String fullName, Pageable pageable) {
+        Page<Score> scorePage = scoreRepository.findByEmployeeFullNameContainingIgnoreCase(fullName, pageable);
+        return scorePage.map(scoreMapper::toDTO);
+    }
+
+    @Override
+    public Page<Map<String, Object>> getDepartmentSummary(int page) {
+        Pageable pageable = PageRequest.of(page, 8);
+        return scoreRepository.getDepartmentSummarySortedByRewardScore(pageable);
+    }
+
+    @Override
+    public Page<Map<String, Object>> getEmployeeSummary(int page) {
+        Pageable pageable = PageRequest.of(page, 8);
+        return scoreRepository.getEmployeeSummarySortedByRewardScore(pageable);
     }
 }

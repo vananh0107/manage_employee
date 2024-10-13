@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:insert="~{fragments/fragment::html_head}"></head>
+    <title th:text="#{employee.manage}"></title>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"></header>
+<div class="container my-5">
+
+    <div th:if="${viewType == 'individual'}">
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h2 th:text="#{summary.individual}"></h2>
+            <a th:href="@{/user/scores/rank(viewType=${viewType == 'individual' ? 'department' : 'individual'})}"
+               class="btn btn-info">
+                <span th:if="${viewType == 'individual'}" th:text="#{switch.department}"></span>
+                <span th:if="${viewType == 'department'}" th:text="#{switch.individual}"></span>
+            </a>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th th:text="#{summary.rank}"></th>
+                    <th th:text="#{employee.fullname}"></th>
+                    <th th:text="#{summary.totalAchievements}"></th>
+                    <th th:text="#{summary.totalDisciplines}"></th>
+                    <th th:text="#{summary.rewardScore}"></th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr th:each="summary, iterStat : ${employeeSummary.content}">
+                <td th:text="${iterStat.index + 1 + (employeeSummary.number * employeeSummary.size)}"></td>
+                <td th:text="${summary.employeeName}"></td>
+                <td th:text="${summary.totalAchievements}"></td>
+                <td th:text="${summary.totalDisciplines}"></td>
+                <td th:text="${summary.rewardScore}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${employeeSummary.hasPrevious() ? '' : 'disabled'}">
+                    <a class="page-link" th:href="@{/user/scores/rank(viewType='individual', page=${employeeSummary.number - 1})}" th:text="#{pagination.previous}"></a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link" th:text="${employeeSummary.number + 1}"></span>
+                </li>
+                <li class="page-item" th:classappend="${employeeSummary.hasNext() ? '' : 'disabled'}">
+                    <a class="page-link" th:href="@{/user/scores/rank(viewType='individual', page=${employeeSummary.number + 1})}" th:text="#{pagination.next}"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div th:if="${viewType == 'department'}">
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h2 th:text="#{summary.department}"></h2>
+            <a th:href="@{/user/scores/rank(viewType=${viewType == 'department' ? 'individual' : 'department'})}"
+               class="btn btn-info">
+                <span th:if="${viewType == 'department'}" th:text="#{switch.individual}"></span>
+                <span th:if="${viewType == 'individual'}" th:text="#{switch.department}"></span>
+            </a>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th th:text="#{summary.rank}"></th>
+                <th th:text="#{department.table.name}"></th>
+                <th th:text="#{summary.totalAchievements}"></th>
+                <th th:text="#{summary.totalDisciplines}"></th>
+                <th th:text="#{summary.rewardScore}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="summary, iterStat : ${departmentSummary.content}">
+                <td th:text="${iterStat.index + 1 + (departmentSummary.number * departmentSummary.size)}"></td>
+                <td th:text="${summary.departmentName}"></td>
+                <td th:text="${summary.totalAchievements}"></td>
+                <td th:text="${summary.totalDisciplines}"></td>
+                <td th:text="${summary.rewardScore}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${departmentSummary.hasPrevious() ? '' : 'disabled'}">
+                    <a class="page-link" th:href="@{/user/scores/rank(viewType='department', page=${departmentSummary.number - 1})}" th:text="#{pagination.previous}"></a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link" th:text="${departmentSummary.number + 1}"></span>
+                </li>
+                <li class="page-item" th:classappend="${departmentSummary.hasNext() ? '' : 'disabled'}">
+                    <a class="page-link" th:href="@{/user/scores/rank(viewType='department', page=${departmentSummary.number + 1})}" th:text="#{pagination.next}"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

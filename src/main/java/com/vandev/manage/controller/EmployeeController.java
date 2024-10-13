@@ -1,7 +1,8 @@
 package com.vandev.manage.controller;
 
-import com.vandev.manage.pojo.Employee;
-import com.vandev.manage.pojo.Department;
+import com.vandev.manage.dto.EmployeeDTO;
+import com.vandev.manage.dto.DepartmentDTO;
+import com.vandev.manage.dto.ScoreDTO;
 import com.vandev.manage.pojo.Score;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
 @Controller
 public class EmployeeController {
 
@@ -37,25 +39,28 @@ public class EmployeeController {
 
     @Autowired
     private ImageServiceImpl imageServiceImpl;
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields("image");
     }
+
     @GetMapping("/user/employees")
     public String listEmployees(Model model,
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "8") int size) {
-        Page<Employee> employeePage = employeeServiceImpl.getPagedEmployees(Pageable.ofSize(size).withPage(page));
-        for (Employee employee : employeePage.getContent()) {
-            String imagePath = employee.getImage();
-            if (imagePath != null && !imagePath.isEmpty()) {
-                String fileName = "/"+imagePath;
-                employee.setImage(fileName);
-            }
-        }
-        String searchUrl="/user/employees/search";
+        Page<EmployeeDTO> employeePage = employeeServiceImpl.getPagedEmployees(Pageable.ofSize(size).withPage(page));
+        List<String> departmentNames = employeePage.getContent().stream()
+                .map(employee -> {
+                    if (employee.getDepartmentId() != null) {
+                        DepartmentDTO department = departmentServiceImpl.getDepartmentById(employee.getDepartmentId());
+                        return department != null ? department.getName() : "N/A";
+                    }
+                    return "N/A";
+                }).toList();
         model.addAttribute("employeePage", employeePage);
-        model.addAttribute("searchUrl",searchUrl);
+        model.addAttribute("departmentNames", departmentNames);
+        model.addAttribute("searchUrl", "/user/employees/search");
         return "employee/index";
     }
 
@@ -65,14 +70,7 @@ public class EmployeeController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
-        Page<Employee> employeePage = employeeServiceImpl.searchByFullName(query,Pageable.ofSize(size).withPage(page));
-        for (Employee employee : employeePage.getContent()) {
-            String imagePath = employee.getImage();
-            if (imagePath != null && !imagePath.isEmpty()) {
-                String fileName = "/"+imagePath;
-                employee.setImage(fileName);
-            }
-        }
+        Page<EmployeeDTO> employeePage = employeeServiceImpl.searchByFullName(query, Pageable.ofSize(size).withPage(page));
         model.addAttribute("employeePage", employeePage);
         model.addAttribute("query", query);
         return "employee/index";
@@ -81,85 +79,85 @@ public class EmployeeController {
     @GetMapping("/admin/employees/create")
     public String createEmployee(Model model) {
         model.addAttribute("departments", departmentServiceImpl.getAllDepartments());
-        model.addAttribute("employee", new Employee());
+        model.addAttribute("employee", new EmployeeDTO());
         return "employee/create";
     }
 
     @PostMapping("/admin/employees/create")
-    public String createEmployee(@ModelAttribute Employee employee,
+    public String createEmployee(@ModelAttribute EmployeeDTO employeeDTO,
                                  @RequestParam("image") MultipartFile imageFile,
                                  @RequestParam("departmentId") String departmentId,
                                  RedirectAttributes redirectAttributes) {
-            String imagePath = imageServiceImpl.saveImageWithTimestamp(imageFile);
-            if(imagePath.equals("Failed to upload image")) {
-                redirectAttributes.addFlashAttribute("message", "Failed to upload image");
-                return "redirect:/user/employees";
-            }
-            employee.setImage(imagePath);
-            if (departmentId == null || departmentId.isEmpty()) {
-                employee.setDepartment(null);
-            } else {
-                Department department = departmentServiceImpl.getDepartmentById(Integer.parseInt(departmentId));
-                employee.setDepartment(department);
-            }
-            employeeServiceImpl.createEmployee(employee);
+        String imagePath = imageServiceImpl.saveImageWithTimestamp(imageFile);
+        if (imagePath.equals("Failed to upload image")) {
+            redirectAttributes.addFlashAttribute("message", "Failed to upload image");
             return "redirect:/user/employees";
+        }
+        employeeDTO.setImage(imagePath);
+        if (departmentId == null || departmentId.isEmpty()) {
+            employeeDTO.setDepartmentId(null);
+        } else {
+            DepartmentDTO departmentDTO = departmentServiceImpl.getDepartmentById(Integer.parseInt(departmentId));
+            employeeDTO.setDepartmentId(departmentDTO.getId());
+        }
+        employeeServiceImpl.createEmployee(employeeDTO);
+        return "redirect:/user/employees";
     }
 
     @GetMapping("/user/employees/view/{id}")
     public String viewEmployee(@PathVariable("id") Integer id, Model model) {
-        Employee employee = employeeServiceImpl.getEmployeeById(id);
-        List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(id);
-        int totalAchievements = (int) scores.stream().filter(score -> score.isType()).count();
-        int totalDisciplines = (int) scores.stream().filter(score -> !score.isType()).count();
+        EmployeeDTO employeeDTO = employeeServiceImpl.getEmployeeById(id);
+        List<ScoreDTO> scoreDTOs = scoreServiceImpl.getScoreByEmployeeId(id);
+        int totalAchievements = (int) scoreDTOs.stream().filter(score -> score.isType()).count();
+        int totalDisciplines = (int) scoreDTOs.stream().filter(score -> !score.isType()).count();
         int rewardScore = totalAchievements - totalDisciplines;
-        employee.setImage("/"+employee.getImage());
+        employeeDTO.setImage("/" + employeeDTO.getImage());
         model.addAttribute("totalAchievements", totalAchievements);
         model.addAttribute("totalDisciplines", totalDisciplines);
         model.addAttribute("rewardScore", rewardScore);
-        model.addAttribute("employee", employee);
+        model.addAttribute("employee", employeeDTO);
         return "employee/detail";
     }
 
+
     @GetMapping("/admin/employees/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model) {
-        Employee employee = employeeServiceImpl.getEmployeeById(id);
-        employee.setImage("/"+employee.getImage());
-        model.addAttribute("employee", employee);
-        List<Department> departments = departmentServiceImpl.getAllDepartments();
-        model.addAttribute("departments", departments);
+        EmployeeDTO employeeDTO = employeeServiceImpl.getEmployeeById(id);
+        employeeDTO.setImage("/" + employeeDTO.getImage());
+        model.addAttribute("employee", employeeDTO);
+        model.addAttribute("departments", departmentServiceImpl.getAllDepartments());
         return "employee/edit";
     }
 
     @PostMapping("/admin/employees/edit/{id}")
     public String updateEmployee(@PathVariable("id") Integer id,
-                                 @ModelAttribute Employee employee,
+                                 @ModelAttribute EmployeeDTO employeeDTO,
                                  @RequestParam("image") MultipartFile imageFile,
                                  @RequestParam("departmentId") String departmentId,
-                                 Model model,
                                  RedirectAttributes redirectAttributes) {
-            Employee existingEmployee = employeeServiceImpl.getEmployeeById(id);
-            String newImagePath = imageServiceImpl.updateImage(existingEmployee.getImage(),imageFile);
-            employee.setImage(newImagePath);
-            if(newImagePath.equals("Failed to update image")){
-                redirectAttributes.addFlashAttribute("errorMessage", "Failed to update employee or handle image file.");
-                return "redirect:/user/employees";
-            }
-            if (departmentId == null || departmentId.isEmpty()) {
-                employee.setDepartment(null);
-            } else {
-                Department department = departmentServiceImpl.getDepartmentById(Integer.parseInt(departmentId));
-                employee.setDepartment(department);
-            }
-            employeeServiceImpl.updateEmployee(id, employee);
+        EmployeeDTO existingEmployeeDTO = employeeServiceImpl.getEmployeeById(id);
+        String newImagePath = imageServiceImpl.updateImage(existingEmployeeDTO.getImage(), imageFile);
+        employeeDTO.setImage(newImagePath);
+        if (newImagePath.equals("Failed to update image")) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update employee or handle image file.");
             return "redirect:/user/employees";
+        }
+        if (departmentId == null || departmentId.isEmpty()) {
+            employeeDTO.setDepartmentId(null);
+        } else {
+            DepartmentDTO departmentDTO = departmentServiceImpl.getDepartmentById(Integer.parseInt(departmentId));
+            employeeDTO.setDepartmentId(departmentDTO.getId());
+        }
+        employeeServiceImpl.updateEmployee(id, employeeDTO);
+        return "redirect:/user/employees";
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/employees/delete/{id}")
     public String deleteEmployee(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {
-            Employee employee = employeeServiceImpl.getEmployeeById(id);
-            String imagePath = employee.getImage();
+            EmployeeDTO employeeDTO = employeeServiceImpl.getEmployeeById(id);
+            String imagePath = employeeDTO.getImage();
             if (imagePath != null && !imagePath.isEmpty()) {
                 Path filePath = Paths.get(imagePath);
                 Files.deleteIfExists(filePath);

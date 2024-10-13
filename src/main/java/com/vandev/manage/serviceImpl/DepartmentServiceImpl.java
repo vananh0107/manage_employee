@@ -1,5 +1,7 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.dto.DepartmentDTO;
+import com.vandev.manage.mapper.DepartmentMapper;
 import com.vandev.manage.pojo.Department;
 import com.vandev.manage.repository.DepartmentRepository;
 import com.vandev.manage.service.DepartmentService;
@@ -11,28 +13,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private  DepartmentRepository departmentRepository;
-
+    @Autowired
+    private DepartmentMapper departmentMapper;
     @Override
-    public Department createDepartment(Department department) {
-        if (departmentRepository.findByName(department.getName()).isPresent()) {
+    public DepartmentDTO createDepartment(DepartmentDTO departmentDTO) {
+        if (departmentRepository.findByName(departmentDTO.getName()).isPresent()) {
             throw new IllegalArgumentException("Department name already exists.");
         }
-        return departmentRepository.save(department);
+        Department department = departmentMapper.toEntity(departmentDTO);
+        return departmentMapper.toDTO(departmentRepository.save(department));
     }
 
     @Override
-    public Department updateDepartment(Integer departmentId, Department department) {
+    public DepartmentDTO updateDepartment(Integer departmentId, DepartmentDTO departmentDTO) {
         Optional<Department> existingDepartment = departmentRepository.findById(departmentId);
         if (existingDepartment.isPresent()) {
             Department updatedDepartment = existingDepartment.get();
-            updatedDepartment.setName(department.getName());
-            return departmentRepository.save(updatedDepartment);
+            updatedDepartment.setName(departmentDTO.getName());
+            return departmentMapper.toDTO(departmentRepository.save(updatedDepartment));
         } else {
             throw new IllegalArgumentException("Department not found.");
         }
@@ -47,22 +52,28 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department getDepartmentById(Integer departmentId) {
-        return departmentRepository.findById(departmentId)
+    public DepartmentDTO getDepartmentById(Integer departmentId) {
+        Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found."));
+        return departmentMapper.toDTO(department);
+    }
+    @Override
+    public List<DepartmentDTO> getAllDepartments() {
+
+        return departmentRepository.findAll()
+                .stream()
+                .map(departmentMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Department> getAllDepartments() {
-        return departmentRepository.findAll();
-    }
-
-    @Override
-    public Page<Department> findPaginated(int page, int size) {
-        return departmentRepository.findAll(PageRequest.of(page, size));
+    public Page<DepartmentDTO> findPaginated(int page, int size) {
+        return departmentRepository.findAll(PageRequest.of(page, size))
+                .map(departmentMapper::toDTO);
     }
     @Override
-    public Page<Department> searchByName(String name, Pageable pageable) {
-        return departmentRepository.findByNameContainingIgnoreCase(name,pageable);
+    public Page<DepartmentDTO> searchByName(String name, Pageable pageable) {
+        return departmentRepository.findByNameContainingIgnoreCase(name, pageable)
+                .map(departmentMapper::toDTO);
     }
 }

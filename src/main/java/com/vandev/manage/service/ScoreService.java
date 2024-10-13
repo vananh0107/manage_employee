@@ -1,17 +1,22 @@
 package com.vandev.manage.service;
 
+import com.vandev.manage.dto.ScoreDTO;
 import com.vandev.manage.pojo.Score;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ScoreService {
-    Score createScore(Score score);
-    Score updateScore(Integer pointId, Score score);
+    ScoreDTO createScore(ScoreDTO scoreDTO);
+    ScoreDTO updateScore(Integer pointId, ScoreDTO scoreDTO);
     void deleteScore(Integer pointId);
-    Score getScoreById(Integer pointId);
-    List<Score> getScoreByEmployeeId(Integer employeeId);
-    Page<Score> getPagedScores(Pageable pageable);
-    Page<Score> searchScoreByEmployeeFullName(String fullName,Pageable pageable);
+    ScoreDTO getScoreById(Integer pointId);
+    List<ScoreDTO> getScoreByEmployeeId(Integer employeeId);
+    Page<ScoreDTO> getPagedScores(Pageable pageable);
+    Page<ScoreDTO> searchScoreByEmployeeFullName(String fullName,Pageable pageable);
+    Page<Map<String, Object>> getDepartmentSummary(int page);
+    Page<Map<String, Object>> getEmployeeSummary(int page);
+
 }

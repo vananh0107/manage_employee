@@ -1,131 +1,74 @@
 package com.vandev.manage.controller;
 
-import com.vandev.manage.pojo.Department;
-import com.vandev.manage.pojo.Employee;
-import com.vandev.manage.pojo.Score;
-import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
-import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
-import com.vandev.manage.serviceImpl.ScoreServiceImpl;
+import com.vandev.manage.dto.ScoreDTO;
+import com.vandev.manage.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-@Controller
+@RestController
+@RequestMapping("/scores")
 public class ScoreController {
 
     @Autowired
-    private EmployeeServiceImpl employeeServiceImpl;
+    private ScoreService scoreService;
 
-    @Autowired
-    private ScoreServiceImpl scoreServiceImpl;
-
-    @Autowired
-    private DepartmentServiceImpl departmentServiceImpl;
-
-    @GetMapping("/user/scores")
-    public String listScores(Model model,
-                            @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "8") int size){
-        Page<Score> scorePage = scoreServiceImpl.getPagedScores(Pageable.ofSize(size).withPage(page));
-        List<Employee> employees = employeeServiceImpl.getAllEmployees();
-        String searchUrl="/user/scores/search";
-        model.addAttribute("searchUrl",searchUrl);
-        model.addAttribute("employees", employees);
-        model.addAttribute("scorePage", scorePage);
-        return "score/index";
-    }
-    @GetMapping("/user/scores/search")
-    public String searchScores(
-            @RequestParam("query") String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Model model) {
-        Page<Score> scorePage = scoreServiceImpl.searchScoreByEmployeeFullName(query,Pageable.ofSize(size).withPage(page));
-        model.addAttribute("scorePage", scorePage);
-        model.addAttribute("query", query);
-        return "score/index";
-    }
-    @PostMapping("/admin/scores/create")
-    public String createScore(@ModelAttribute Score score,
-                              RedirectAttributes redirectAttributes) {
-        try {
-            scoreServiceImpl.createScore(score);
-            redirectAttributes.addFlashAttribute("message", "Score created successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create score.");
-        }
-
-        return "redirect:/user/scores";
-    }
-    @GetMapping("/user/scores/view/{id}")
-    public String viewScore(@PathVariable("id") Integer id, Model model) {
-        Score score = scoreServiceImpl.getScoreById(id);
-        if (score == null) {
-            return "redirect:/user/scores";
-        }
-        model.addAttribute("score", score);
-        return "score/detail";
+    @PostMapping
+    public ResponseEntity<ScoreDTO> createScore(@RequestBody ScoreDTO scoreDTO) {
+        ScoreDTO createdScore = scoreService.createScore(scoreDTO);
+        return ResponseEntity.ok(createdScore);
     }
 
-    @GetMapping("/admin/scores/edit/{id}")
-    public String editScore(@PathVariable("id") Integer id, Model model) {
-        Score score = scoreServiceImpl.getScoreById(id);
-        if (score == null) {
-            return "redirect:/user/scores";
-        }
-
-        List<Employee> employees = employeeServiceImpl.getAllEmployees();
-        model.addAttribute("score", score);
-        model.addAttribute("employees", employees);
-        return "score/edit";
+    @PutMapping("/{id}")
+    public ResponseEntity<ScoreDTO> updateScore(@PathVariable("id") Integer scoreId, @RequestBody ScoreDTO scoreDTO) {
+        ScoreDTO updatedScore = scoreService.updateScore(scoreId, scoreDTO);
+        return ResponseEntity.ok(updatedScore);
     }
 
-    @PostMapping("/admin/scores/edit/{id}")
-    public String updateScore(@PathVariable("id") Integer id,
-                              @ModelAttribute Score score) {
-        scoreServiceImpl.updateScore(id, score);
-        return "redirect:/user/scores";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteScore(@PathVariable("id") Integer scoreId) {
+        scoreService.deleteScore(scoreId);
+        return ResponseEntity.noContent().build();
     }
-    @GetMapping("/admin/scores/delete/{id}")
-    public String deleteScore(@PathVariable("id") Integer id) {
-        scoreServiceImpl.deleteScore(id);
-        return "redirect:/user/scores";
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ScoreDTO> getScoreById(@PathVariable("id") Integer scoreId) {
+        ScoreDTO scoreDTO = scoreService.getScoreById(scoreId);
+        return ResponseEntity.ok(scoreDTO);
     }
-    @GetMapping("/user/scores/employee/{id}")
-    public String getEmployeeScores(@PathVariable("id") Integer id, Model model) {
-        Employee employee = employeeServiceImpl.getEmployeeById(id);
-        if (employee == null) {
-            return "redirect:/user/employees";
-        }
-        List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(id);
-        model.addAttribute("employee", employee);
-        model.addAttribute("scores", scores);
-        return "score/employee";
+
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<List<ScoreDTO>> getScoresByEmployeeId(@PathVariable("employeeId") Integer employeeId) {
+        List<ScoreDTO> scores = scoreService.getScoreByEmployeeId(employeeId);
+        return ResponseEntity.ok(scores);
     }
-    @GetMapping("/user/scores/department/{id}")
-    public String viewDepartmentScores(@PathVariable("id") Integer id, Model model) {
-        Department department = departmentServiceImpl.getDepartmentById(id);
-        List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
-        List<Score> scores = new ArrayList<>();
-        for (Employee employee : employees) {
-            List<Score> employeeScores = scoreServiceImpl.getScoreByEmployeeId(employee.getId());
-            scores.addAll(employeeScores);
-        }
-        model.addAttribute("department", department);
-        model.addAttribute("scores", scores);
-        return "score/department";
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<ScoreDTO>> getPagedScores(Pageable pageable) {
+        Page<ScoreDTO> pagedScores = scoreService.getPagedScores(pageable);
+        return ResponseEntity.ok(pagedScores);
     }
-    @GetMapping("/admin/scores/create")
-    public String createEmployee(Model model) {
-        model.addAttribute("employees", employeeServiceImpl.getAllEmployees());
-        model.addAttribute("score", new Score());
-        return "score/create";
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ScoreDTO>> searchScoresByEmployeeFullName(@RequestParam("fullName") String fullName, Pageable pageable) {
+        Page<ScoreDTO> scores = scoreService.searchScoreByEmployeeFullName(fullName, pageable);
+        return ResponseEntity.ok(scores);
+    }
+
+    @GetMapping("/department-summary")
+    public ResponseEntity<Page<Map<String, Object>>> getDepartmentSummary(@RequestParam(defaultValue = "0") int page) {
+        Page<Map<String, Object>> departmentSummary = scoreService.getDepartmentSummary(page);
+        return ResponseEntity.ok(departmentSummary);
+    }
+
+    @GetMapping("/employee-summary")
+    public ResponseEntity<Page<Map<String, Object>>> getEmployeeSummary(@RequestParam(defaultValue = "0") int page) {
+        Page<Map<String, Object>> employeeSummary = scoreService.getEmployeeSummary(page);
+        return ResponseEntity.ok(employeeSummary);
     }
 }

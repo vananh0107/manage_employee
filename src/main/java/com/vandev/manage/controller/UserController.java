@@ -1,5 +1,6 @@
 package com.vandev.manage.controller;
 
+import com.vandev.manage.dto.EmployeeDTO;
 import com.vandev.manage.dto.UserSystemDTO;
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
@@ -28,7 +29,7 @@ public class UserController {
                                         @RequestParam(defaultValue = "8") int size) {
         Page<UserSystemDTO> users = userServiceImpl.getPagedUsers(Pageable.ofSize(size).withPage(page));
         model.addAttribute("users", users);
-        List<Employee> availableEmployees = employeeServiceImpl.getEmployeesWithoutUser();
+        List<EmployeeDTO> availableEmployees = employeeServiceImpl.getEmployeesWithoutUser();
         String searchUrl = "/admin/users/search";
         model.addAttribute("searchUrl", searchUrl);
         model.addAttribute("availableEmployees", availableEmployees);
@@ -64,7 +65,7 @@ public class UserController {
     public String showEditUserForm(@PathVariable Integer id, Model model) {
         UserSystemDTO user = userServiceImpl.getUserById(id);
         model.addAttribute("user", user);
-        List<Employee> employees = employeeServiceImpl.getEmployeesWithoutUser();
+        List<EmployeeDTO> employees = employeeServiceImpl.getEmployeesWithoutUser();
         model.addAttribute("employees", employees);
         return "user/edit";
     }

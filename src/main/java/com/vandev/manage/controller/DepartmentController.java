@@ -1,8 +1,8 @@
 package com.vandev.manage.controller;
 
-import com.vandev.manage.pojo.Department;
-import com.vandev.manage.pojo.Employee;
-import com.vandev.manage.pojo.Score;
+import com.vandev.manage.dto.DepartmentDTO;
+import com.vandev.manage.dto.EmployeeDTO;
+import com.vandev.manage.dto.ScoreDTO;
 import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
 import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.ScoreServiceImpl;
@@ -19,47 +19,47 @@ import java.util.List;
 public class DepartmentController {
 
     @Autowired
-    private DepartmentServiceImpl departmentServiceImpl;
+    private DepartmentServiceImpl departmentService;
 
     @Autowired
-    private EmployeeServiceImpl employeeServiceImpl;
+    private EmployeeServiceImpl employeeService;
 
     @Autowired
-    private ScoreServiceImpl scoreServiceImpl;
+    private ScoreServiceImpl scoreService;
 
     @GetMapping("/user/departments")
     public String listDepartments(Model model,
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size) {
-        Page<Department> departmentPage = departmentServiceImpl.findPaginated(page, size);
-        String searchUrl="/user/departments/search";
-        model.addAttribute("searchUrl",searchUrl);
+        Page<DepartmentDTO> departmentPage = departmentService.findPaginated(page, size);
+        model.addAttribute("searchUrl", "/user/departments/search");
         model.addAttribute("departmentPage", departmentPage);
-        model.addAttribute("employeeServiceImpl", employeeServiceImpl);
         return "department/index";
     }
+
     @GetMapping("/user/departments/search")
-    public String searchEmployees(
+    public String searchDepartments(
             @RequestParam("query") String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
-        Page<Department> departmentPage = departmentServiceImpl.searchByName(query, Pageable.ofSize(size).withPage(page));
+        Page<DepartmentDTO> departmentPage = departmentService.searchByName(query, Pageable.ofSize(size).withPage(page));
         model.addAttribute("departmentPage", departmentPage);
-        model.addAttribute("employeeServiceImpl", employeeServiceImpl);
         model.addAttribute("query", query);
         return "department/index";
     }
+
     @PostMapping("/admin/departments/create")
-    public String createDepartment(@ModelAttribute Department department,
+    public String createDepartment(@ModelAttribute DepartmentDTO departmentDTO,
                                    @RequestParam(value = "employeeIds", required = false) List<Integer> employeeIds,
                                    Model model) {
         try {
-            departmentServiceImpl.createDepartment(department);
+            DepartmentDTO createdDepartment = departmentService.createDepartment(departmentDTO);
+
             if (employeeIds != null && !employeeIds.isEmpty()) {
-                List<Employee> employees = employeeServiceImpl.findAllById(employeeIds);
-                employees.forEach(employee -> employee.setDepartment(department));
-                employeeServiceImpl.saveAll(employees);
+                List<EmployeeDTO> employees = employeeService.findAllById(employeeIds);
+                employees.forEach(employee -> employee.setDepartmentId(createdDepartment.getId()));
+                employeeService.saveAll(employees);
             }
             return "redirect:/user/departments";
         } catch (IllegalArgumentException e) {
@@ -67,20 +67,27 @@ public class DepartmentController {
             return "department/create";
         }
     }
+
     @GetMapping("/user/departments/view/{id}")
     public String viewDepartment(@PathVariable("id") Integer id, Model model) {
-        Department department = departmentServiceImpl.getDepartmentById(id);
-        List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
+        DepartmentDTO departmentDTO = departmentService.getDepartmentById(id);
+        if (departmentDTO == null) {
+            return "redirect:/user/departments";
+        }
+
+        List<EmployeeDTO> employees = employeeService.getEmployeesByDepartment(departmentDTO).stream()
+                .toList();
         int totalAchievements = 0;
         int totalDisciplines = 0;
-        int rewardScore = 0;
-        for (Employee employee : employees) {
-            List<Score> scores = scoreServiceImpl.getScoreByEmployeeId(employee.getId());
+
+        for (EmployeeDTO employee : employees) {
+            List<ScoreDTO> scores = scoreService.getScoreByEmployeeId(employee.getId());
             totalAchievements += (int) scores.stream().filter(score -> score.isType()).count();
             totalDisciplines += (int) scores.stream().filter(score -> !score.isType()).count();
         }
-        rewardScore = (int) totalAchievements-totalDisciplines;
-        model.addAttribute("department", department);
+
+        int rewardScore = totalAchievements - totalDisciplines;
+        model.addAttribute("department", departmentDTO);
         model.addAttribute("employees", employees);
         model.addAttribute("totalAchievements", totalAchievements);
         model.addAttribute("totalDisciplines", totalDisciplines);
@@ -88,20 +95,26 @@ public class DepartmentController {
 
         return "department/detail";
     }
+
     @GetMapping("/admin/departments/create")
-    public String createEmployee(Model model) {
-        List<Employee> employeesWithoutDepartment = employeeServiceImpl.getEmployeesWithoutDepartment();
+    public String createDepartmentForm(Model model) {
+        List<EmployeeDTO> employeesWithoutDepartment = employeeService.getEmployeesWithoutDepartment();
         model.addAttribute("employees", employeesWithoutDepartment);
-        model.addAttribute("department", new Department());
+        model.addAttribute("department", new DepartmentDTO());
         return "department/create";
     }
+
     @GetMapping("/admin/departments/edit/{id}")
     public String editDepartment(@PathVariable("id") Integer id, Model model) {
-        Department department = departmentServiceImpl.getDepartmentById(id);
-        List<Employee> employeesInDepartment = employeeServiceImpl.getEmployeesByDepartment(department);
-        List<Employee> employeesWithoutDepartment = employeeServiceImpl.getEmployeesWithoutDepartment();
+        DepartmentDTO departmentDTO = departmentService.getDepartmentById(id);
+        if (departmentDTO == null) {
+            return "redirect:/user/departments";
+        }
 
-        model.addAttribute("department", department);
+        List<EmployeeDTO> employeesInDepartment = employeeService.getEmployeesByDepartment(departmentDTO);
+        List<EmployeeDTO> employeesWithoutDepartment = employeeService.getEmployeesWithoutDepartment();
+
+        model.addAttribute("department", departmentDTO);
         model.addAttribute("employeesInDepartment", employeesInDepartment);
         model.addAttribute("employeesWithoutDepartment", employeesWithoutDepartment);
 
@@ -110,39 +123,41 @@ public class DepartmentController {
 
     @PostMapping("/admin/departments/edit/{id}")
     public String updateDepartment(@PathVariable("id") Integer id,
-                                   @ModelAttribute Department department,
+                                   @ModelAttribute DepartmentDTO departmentDTO,
                                    @RequestParam(value = "currentEmployeeIds", required = false) List<Integer> currentEmployeeIds,
-                                   @RequestParam(value = "newEmployeeIds", required = false) List<Integer> newEmployeeIds
-                                   ) {
-        Department existingDepartment = departmentServiceImpl.getDepartmentById(id);
-        existingDepartment.setName(department.getName());
-        departmentServiceImpl.updateDepartment(id,existingDepartment);
+                                   @RequestParam(value = "newEmployeeIds", required = false) List<Integer> newEmployeeIds) {
+        DepartmentDTO existingDepartment = departmentService.getDepartmentById(id);
+        if (existingDepartment != null) {
+            existingDepartment.setName(departmentDTO.getName());
+            departmentService.updateDepartment(id, existingDepartment);
 
-        List<Employee> currentEmployees = employeeServiceImpl.getEmployeesByDepartment(existingDepartment);
-        for (Employee employee : currentEmployees) {
-            if (currentEmployeeIds == null || !currentEmployeeIds.contains(employee.getId())) {
-                employee.setDepartment(null);
+            List<EmployeeDTO> currentEmployees = employeeService.getEmployeesByDepartment(existingDepartment);
+            currentEmployees.forEach(employee -> {
+                if (currentEmployeeIds == null || !currentEmployeeIds.contains(employee.getId())) {
+                    employee.setDepartmentId(null);
+                }
+            });
+            employeeService.saveAll(currentEmployees);
+
+            if (newEmployeeIds != null && !newEmployeeIds.isEmpty()) {
+                List<EmployeeDTO> newEmployees = employeeService.findAllById(newEmployeeIds);
+                newEmployees.forEach(employee -> employee.setDepartmentId(departmentDTO.getId()));
+                employeeService.saveAll(newEmployees);
             }
-        }
-        employeeServiceImpl.saveAll(currentEmployees);
-        if (newEmployeeIds != null && !newEmployeeIds.isEmpty()) {
-            List<Employee> newEmployees = employeeServiceImpl.findAllById(newEmployeeIds);
-            newEmployees.forEach(employee -> employee.setDepartment(existingDepartment));
-            employeeServiceImpl.saveAll(newEmployees);
         }
 
         return "redirect:/user/departments";
     }
+
     @GetMapping("/admin/departments/delete/{id}")
     public String deleteDepartment(@PathVariable("id") Integer id) {
-        Department department = departmentServiceImpl.getDepartmentById(id);
+        DepartmentDTO department = departmentService.getDepartmentById(id);
         if (department != null) {
-            List<Employee> employees = employeeServiceImpl.getEmployeesByDepartment(department);
-            employees.forEach(employee -> employee.setDepartment(null));
-            employeeServiceImpl.saveAll(employees);
-            departmentServiceImpl.deleteDepartment(id);
+            List<EmployeeDTO> employees = employeeService.getEmployeesByDepartment(department);
+            employees.forEach(employee -> employee.setDepartmentId(null));
+            employeeService.saveAll(employees);
+            departmentService.deleteDepartment(id);
         }
         return "redirect:/user/departments";
     }
 }
-

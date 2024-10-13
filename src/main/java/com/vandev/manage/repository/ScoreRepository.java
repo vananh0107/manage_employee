@@ -8,8 +8,27 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ScoreRepository extends JpaRepository<Score, Integer> {
     List<Score> findByEmployee_Id(Integer employeeId);
     @Query("SELECT s FROM Score s JOIN s.employee e WHERE LOWER(e.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))")
-    Page<Score> findByEmployeeFullNameContainingIgnoreCase(@Param("fullName") String fullName, Pageable pageable);}
+    Page<Score> findByEmployeeFullNameContainingIgnoreCase(@Param("fullName") String fullName, Pageable pageable);
+    @Query("SELECT d.name AS departmentName, " +
+            "COUNT(CASE WHEN s.type = true THEN 1 END) AS totalAchievements, " +
+            "COUNT(CASE WHEN s.type = false THEN 1 END) AS totalDisciplines, " +
+            "(COUNT(CASE WHEN s.type = true THEN 1 END) - COUNT(CASE WHEN s.type = false THEN 1 END)) AS rewardScore " +
+            "FROM Department d JOIN d.employees e JOIN e.scores s " +
+            "GROUP BY d.id " +
+            "ORDER BY rewardScore DESC")
+    Page<Map<String, Object>> getDepartmentSummarySortedByRewardScore(Pageable pageable);
+
+    @Query("SELECT e.fullName AS employeeName, " +
+            "COUNT(CASE WHEN s.type = true THEN 1 END) AS totalAchievements, " +
+            "COUNT(CASE WHEN s.type = false THEN 1 END) AS totalDisciplines, " +
+            "(COUNT(CASE WHEN s.type = true THEN 1 END) - COUNT(CASE WHEN s.type = false THEN 1 END)) AS rewardScore " +
+            "FROM Employee e JOIN e.scores s " +
+            "GROUP BY e.id " +
+            "ORDER BY rewardScore DESC")
+    Page<Map<String, Object>> getEmployeeSummarySortedByRewardScore(Pageable pageable);
+}
