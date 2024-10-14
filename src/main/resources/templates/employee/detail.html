@@ -50,8 +50,8 @@
                 </tr>
                 <tr>
                     <th th:text="#{employee.department}"></th>
-                    <td th:if="${employee.department != null}" th:text="${employee.department.name}"></td>
-                    <td th:if="${employee.department == null}" th:text="#{employee.noDepartment}"></td>
+                    <td th:if="${departmentName != null}" th:text="${departmentName}"></td>
+                    <td th:if="${departmentName == null}" th:text="#{employee.noDepartment}"></td>
                 </tr>
                 <tr>
                     <th th:text="#{total_achieve}"></th>

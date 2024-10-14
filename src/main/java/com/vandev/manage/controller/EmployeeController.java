@@ -8,6 +8,9 @@ import com.vandev.manage.serviceImpl.EmployeeServiceImpl;
 import com.vandev.manage.serviceImpl.DepartmentServiceImpl;
 import com.vandev.manage.serviceImpl.ImageServiceImpl;
 import com.vandev.manage.serviceImpl.ScoreServiceImpl;
+import lombok.extern.log4j.Log4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +47,8 @@ public class EmployeeController {
     public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields("image");
     }
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+
 
     @GetMapping("/user/employees")
     public String listEmployees(Model model,
@@ -52,6 +57,7 @@ public class EmployeeController {
         Page<EmployeeDTO> employeePage = employeeServiceImpl.getPagedEmployees(Pageable.ofSize(size).withPage(page));
         List<String> departmentNames = employeePage.getContent().stream()
                 .map(employee -> {
+                    logger.info(employee.getDepartmentId().toString());
                     if (employee.getDepartmentId() != null) {
                         DepartmentDTO department = departmentServiceImpl.getDepartmentById(employee.getDepartmentId());
                         return department != null ? department.getName() : "N/A";
@@ -112,6 +118,14 @@ public class EmployeeController {
         int totalDisciplines = (int) scoreDTOs.stream().filter(score -> !score.isType()).count();
         int rewardScore = totalAchievements - totalDisciplines;
         employeeDTO.setImage("/" + employeeDTO.getImage());
+        Integer departmentId=employeeDTO.getDepartmentId();
+        if(departmentId != null){
+            DepartmentDTO departmentDTO=departmentServiceImpl.getDepartmentById(departmentId);
+            model.addAttribute("departmentName", departmentDTO.getName());
+        }
+        else{
+            model.addAttribute("departmentName", "N/A");
+        }
         model.addAttribute("totalAchievements", totalAchievements);
         model.addAttribute("totalDisciplines", totalDisciplines);
         model.addAttribute("rewardScore", rewardScore);
