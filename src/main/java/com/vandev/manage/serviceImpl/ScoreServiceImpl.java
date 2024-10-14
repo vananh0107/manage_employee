@@ -1,5 +1,7 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.dto.DepartmentSummaryDTO;
+import com.vandev.manage.dto.EmployeeSummaryDTO;
 import com.vandev.manage.pojo.Score;
 import com.vandev.manage.repository.ScoreRepository;
 import com.vandev.manage.service.ScoreService;
@@ -68,5 +70,15 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public Page<Score> searchScoreByEmployeeFullName(String fullName, Pageable pageable) {
         return scoreRepository.findByEmployeeFullNameContainingIgnoreCase(fullName, pageable);
+    }
+    @Override
+    public Page<DepartmentSummaryDTO> getDepartmentSummary(int page) {
+        Pageable pageable = PageRequest.of(page, 8);
+        return scoreRepository.getDepartmentSummarySortedByRewardScore(pageable);
+    }
+    @Override
+    public Page<EmployeeSummaryDTO> getEmployeeSummary(int page) {
+        Pageable pageable = PageRequest.of(page, 8);
+        return scoreRepository.getEmployeeSummarySortedByRewardScore(pageable);
     }
 }

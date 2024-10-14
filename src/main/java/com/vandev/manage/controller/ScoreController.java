@@ -1,5 +1,7 @@
 package com.vandev.manage.controller;
 
+import com.vandev.manage.dto.DepartmentSummaryDTO;
+import com.vandev.manage.dto.EmployeeSummaryDTO;
 import com.vandev.manage.pojo.Department;
 import com.vandev.manage.pojo.Employee;
 import com.vandev.manage.pojo.Score;
@@ -127,5 +129,22 @@ public class ScoreController {
         model.addAttribute("employees", employeeServiceImpl.getAllEmployees());
         model.addAttribute("score", new Score());
         return "score/create";
+    }
+    @GetMapping("/user/scores/rank")
+    public String getSummary(@RequestParam(defaultValue = "individual") String viewType,
+                             @RequestParam(defaultValue = "0") int page,
+                             Model model) {
+
+        if ("individual".equals(viewType)) {
+            Page<EmployeeSummaryDTO> employeeSummary = scoreServiceImpl.getEmployeeSummary(page);
+            model.addAttribute("employeeSummary", employeeSummary);
+        } else {
+            Page<DepartmentSummaryDTO> departmentSummary = scoreServiceImpl.getDepartmentSummary(page);
+            model.addAttribute("departmentSummary", departmentSummary);
+        }
+
+        model.addAttribute("viewType", viewType);
+
+        return "score/summary";
     }
 }
