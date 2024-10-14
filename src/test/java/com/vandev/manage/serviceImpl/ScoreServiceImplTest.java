@@ -1,5 +1,7 @@
 package com.vandev.manage.serviceImpl;
 
+import com.vandev.manage.dto.DepartmentSummaryDTO;
+import com.vandev.manage.dto.EmployeeSummaryDTO;
 import com.vandev.manage.pojo.Score;
 import com.vandev.manage.repository.ScoreRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -186,5 +188,34 @@ public class ScoreServiceImplTest {
 
         assertEquals(2, result.getTotalElements());
         verify(scoreRepository, times(1)).findByEmployeeFullNameContainingIgnoreCase(anyString(), any(Pageable.class));
+    }
+    @Test
+    void getDepartmentSummary_Success() {
+        DepartmentSummaryDTO summary1 = new DepartmentSummaryDTO("HR", 5L, 3L, 2L);
+        DepartmentSummaryDTO summary2 = new DepartmentSummaryDTO("Finance", 4L, 1L, 3L);
+
+        Page<DepartmentSummaryDTO> page = new PageImpl<>(Arrays.asList(summary1, summary2));
+
+        when(scoreRepository.getDepartmentSummarySortedByRewardScore(any(Pageable.class))).thenReturn(page);
+
+        Page<DepartmentSummaryDTO> result = scoreServiceImpl.getDepartmentSummary(0);
+
+        assertEquals(2, result.getTotalElements());
+        verify(scoreRepository, times(1)).getDepartmentSummarySortedByRewardScore(any(Pageable.class));
+    }
+
+    @Test
+    void getEmployeeSummary_Success() {
+        EmployeeSummaryDTO summary1 = new EmployeeSummaryDTO("John Doe", 5L, 2L, 3L);
+        EmployeeSummaryDTO summary2 = new EmployeeSummaryDTO("Jane Smith", 4L, 3L, 1L);
+
+        Page<EmployeeSummaryDTO> page = new PageImpl<>(Arrays.asList(summary1, summary2));
+
+        when(scoreRepository.getEmployeeSummarySortedByRewardScore(any(Pageable.class))).thenReturn(page);
+
+        Page<EmployeeSummaryDTO> result = scoreServiceImpl.getEmployeeSummary(0);
+
+        assertEquals(2, result.getTotalElements());
+        verify(scoreRepository, times(1)).getEmployeeSummarySortedByRewardScore(any(Pageable.class));
     }
 }
